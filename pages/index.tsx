@@ -2,10 +2,15 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '@/store/reducers'
+import { actions as simpleActions } from '@/store/reducers/simple'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+  const dispatch = useDispatch();
+  const { visible } = useSelector((state: RootState) => state.simple);
   return (
     <>
       <Head>
@@ -16,6 +21,10 @@ export default function Home() {
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
         <div className={styles.description}>
+          <button onClick={() => {
+            dispatch(simpleActions.setVisibleRequest(!visible));
+          }}>TEST</button>
+          <div style={{ color: visible ? "green" : "red" }}>VISIBLE</div>
           <p>
             Get started by editing&nbsp;
             <code className={styles.code}>pages/index.tsx</code>
