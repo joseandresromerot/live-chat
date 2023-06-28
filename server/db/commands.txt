@@ -1,0 +1,5 @@
+npx sequelize-cli model:generate --name AppUser --attributes id:uuid,username:string,password:string,fullname:string
+npx sequelize-cli db:migrate
+npx sequelize-cli seed:generate --name admin-user
+npx sequelize-cli db:seed:all
+npx sequelize-cli db:seed --seed 20230628173434-test-message
