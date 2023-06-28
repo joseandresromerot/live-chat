@@ -15,8 +15,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   Channel.init({
     id: DataTypes.UUID,
-    name: DataTypes.STRING(300),
-    description: DataTypes.STRING(1000)
+    name: DataTypes.STRING,
+    description: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'channel',

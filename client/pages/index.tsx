@@ -4,7 +4,7 @@ import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '@/store/reducers'
-import { actions as simpleActions } from '@/store/reducers/simple'
+import { actions as messagesActions } from '@/store/reducers/messages'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -22,7 +22,7 @@ export default function Home() {
       <main className={`${styles.main} ${inter.className}`}>
         <div className={styles.description}>
           <button onClick={() => {
-            dispatch(simpleActions.setVisibleRequest(!visible));
+            dispatch(messagesActions.showLoading());
           }}>TEST</button>
           <div style={{ color: visible ? "green" : "red" }}>VISIBLE</div>
           <p>
