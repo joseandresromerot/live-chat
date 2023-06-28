@@ -39,10 +39,10 @@ const Alert = () => {
 
       <div className={classes.buttonsContainer}>
         {(secondaryButtonText && secondaryButtonText.trim() !== "") &&
-          <TransparentButton className={`${classes.secondaryButton} ${quicksand.className}`} onClick={secondaryButtonHandler}>{secondaryButtonText}</TransparentButton>
+          <TransparentButton className={`${classes.secondaryButton} ${notoSans.className}`} onClick={secondaryButtonHandler}>{secondaryButtonText}</TransparentButton>
         }
         {(primaryButtonText && primaryButtonText.trim() !== "") &&
-          <RoundedButton className={`${classes.primaryButton} ${quicksand.className}`} onClick={primaryButtonHandler}>{primaryButtonText}</RoundedButton>
+          <RoundedButton className={`${classes.primaryButton} ${notoSans.className}`} onClick={primaryButtonHandler}>{primaryButtonText}</RoundedButton>
         }
       </div>
     </Modal>
