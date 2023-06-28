@@ -12,8 +12,8 @@ export interface MessagesState {
   message: string
   primaryButtonText: string
   primaryButtonHandler: () => void
-  secondaryButtonText: string
-  secondaryButtonHandler: () => void
+  secondaryButtonText: string | null
+  secondaryButtonHandler: (() => void) | null
 }
 
 export interface MessagesAction {
@@ -78,8 +78,8 @@ export const actions = {
     message: string,
     primaryButtonText: string,
     primaryButtonHandler: () => void,
-    secondaryButtonText: string,
-    secondaryButtonHandler: () => void
+    secondaryButtonText: string | null,
+    secondaryButtonHandler: (() => void) | null
   ) => {
     return {
       type: Types.SHOW_MESSAGE,

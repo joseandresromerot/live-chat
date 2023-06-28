@@ -1,6 +1,6 @@
 .button {
-  /*background: #EB5757;*/
   border-radius: 12px;
   border: 0;
   color: #fff;
+  font-family: inherit;
 }
