@@ -14,7 +14,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Message.init({
-    id: DataTypes.UUID,
+    id: {
+      type: DataTypes.UUID,
+      primaryKey: true
+    },
     content: DataTypes.TEXT,
     channel_id: {
       type: DataTypes.UUID,
@@ -32,7 +35,9 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
-    modelName: 'message',
+    modelName: 'Message',
+    tableName: 'message',
+    timestamps: false
   });
   return Message;
 };

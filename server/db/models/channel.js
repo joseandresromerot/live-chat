@@ -10,16 +10,21 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      this.belongsToMany(models.appuser, { through: "channel_appuser" });
+      this.belongsToMany(models.AppUser, { through: "channel_appuser" });
     }
   }
   Channel.init({
-    id: DataTypes.UUID,
+    id: {
+      type: DataTypes.UUID,
+      primaryKey: true
+    },
     name: DataTypes.STRING,
     description: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'channel',
+    modelName: 'Channel',
+    tableName: 'channel',
+    timestamps: false
   });
   return Channel;
 };

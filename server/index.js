@@ -1,5 +1,9 @@
 const express = require("express");
 const cors = require('cors');
+const bcrypt = require('bcryptjs');
+const jwt = require("jsonwebtoken");
+const AppUser = require('./db/models').AppUser;
+const { v4: uuidv4 } = require('uuid');
 
 require('dotenv').config();
 
@@ -9,9 +13,87 @@ const HOST = '0.0.0.0';
 const app = express();
 
 app.use(cors());
+app.use(express.json({ limit: "50mb" }));
 
-app.get("/api", (req, res) => {
-    res.json({ message: "Hola desde el servidor!" });
+app.get("/api", async (req, res) => {
+    const users = await AppUser.findAll();
+    res.json({ message: "Hola desde el servidor!", user: users[0].toJSON() });
+});
+
+app.post("/login", async (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        if (!(username && password)) {
+            res.status(400).send("Enter username and password");
+        }
+
+        const user = await AppUser.findOne({ where: { username } });
+
+        if (user && (await bcrypt.compare(password, user.password))) {
+            const token = jwt.sign(
+                { user_id: user.id, username },
+                process.env.JWT_TOKEN_KEY,
+                {
+                expiresIn: "2h",
+                }
+            );
+
+            res.status(200).json({
+                username: user.username,
+                fullname: user.fullname,
+                avatar_url: user.avatar_url,
+                token
+            });
+            return;
+        }
+        res.status(400).send("Invalid Credentials");
+    } catch (err) {
+        console.log(err);
+    }
+});
+
+app.post("/register", async (req, res) => {
+    try {
+        const { fullname, avatar_url, username, password } = req.body;
+
+        if (!(username && password && fullname)) {
+            res.status(400).send("Enter username, password and full name");
+        }
+
+        const oldUser = await AppUser.findOne({ where: { username } });
+
+        if (oldUser) {
+            return res.status(409).send("User Already Exist. Please Login");
+        }
+
+        const encryptedPassword = await bcrypt.hash(password, 10);
+
+        const user = await AppUser.create({
+            id: uuidv4(),
+            fullname,
+            avatar_url,
+            username: username.toLowerCase(), // sanitize: convert email to lowercase
+            password: encryptedPassword,
+        });
+
+        const token = jwt.sign(
+            { user_id: user.id, username },
+            process.env.JWT_TOKEN_KEY,
+            {
+                expiresIn: "2h",
+            }
+        );
+
+        res.status(201).json({
+            username: user.username,
+            fullname: user.fullname,
+            avatar_url: user.avatar_url,
+            token
+        });
+    } catch (err) {
+        console.log(err);
+    }
 });
 
 app.listen(PORT, HOST, () => {
