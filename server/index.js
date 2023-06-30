@@ -25,7 +25,7 @@ app.post("/login", async (req, res) => {
         const { username, password } = req.body;
 
         if (!(username && password)) {
-            res.status(400).send("Enter username and password");
+            res.status(200).send({ success: false, error: "Enter username and password" });
         }
 
         const user = await AppUser.findOne({ where: { username } });
@@ -40,14 +40,17 @@ app.post("/login", async (req, res) => {
             );
 
             res.status(200).json({
-                username: user.username,
-                fullname: user.fullname,
-                avatar_url: user.avatar_url,
-                token
+                success: true,
+                user: {
+                    username: user.username,
+                    fullname: user.fullname,
+                    avatar_url: user.avatar_url,
+                    token
+                }
             });
             return;
         }
-        res.status(400).send("Invalid Credentials");
+        res.status(200).send({ success: false, error: "Invalid Credentials" });
     } catch (err) {
         console.log(err);
     }
