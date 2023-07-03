@@ -2,7 +2,7 @@ import * as Effects from "redux-saga/effects";
 import { SessionAction, Types, actions } from '../reducers/session';
 import { actions as messagesActions } from '../reducers/messages';
 import { actions as sessionActions } from '../reducers/session';
-import { LoginResponse, login as loginApi, storeAccessToken } from '@/middleware/api';
+import { LoginResponse, login as loginApi } from '@/middleware/api';
 
 const { takeLatest, fork, put } = Effects;
 const call: any = Effects.call;
