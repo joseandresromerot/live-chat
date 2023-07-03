@@ -1,5 +1,7 @@
 import axios from "axios";
 
+const ACCESS_TOKEN_KEY: string = "live_chat/ACCESS_TOKEN_KEY";
+
 export interface LoginResponse {
   data: {
     success: boolean
@@ -8,8 +10,8 @@ export interface LoginResponse {
       username: string
       fullname: string,
       avatar_url: string | null
-      token: string
     }
+    token: string
   }
 }
 
@@ -22,7 +24,7 @@ export const login = (username: string, password: string): Promise<LoginResponse
   let config = {
     method: 'post',
     maxBodyLength: Infinity,
-    url: 'http://localhost:3003/login',
+    url: '/login',
     headers: { 
       'Content-Type': 'application/json'
     },
@@ -31,3 +33,11 @@ export const login = (username: string, password: string): Promise<LoginResponse
   
   return axios(config);
 }
+
+export const test = (): Promise<{ data: { message: string } }> => {
+  return axios({
+    method: 'get',
+    maxBodyLength: Infinity,
+    url: '/test'
+  });
+};

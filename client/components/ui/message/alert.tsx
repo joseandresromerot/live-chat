@@ -1,16 +1,7 @@
-import Modal from 'react-modal';
 import { useSelector, useDispatch } from "react-redux";
 import { actions as messagesActions } from '@/store/reducers/messages';
-import classes from './alert.module.css';
-import RoundedButton from '../button/rounded-button';
-import TransparentButton from '../button/transparent-button';
 import { RootState } from '@/store/reducers';
-import { Noto_Sans } from 'next/font/google';
-
-const notoSans = Noto_Sans({
-  weight: ['300', '400', '500', '600', '700'],
-  subsets: ['latin'],
-});
+import MessageModal from ".";
 
 const Alert = () => {
   const dispatch = useDispatch();
@@ -25,27 +16,17 @@ const Alert = () => {
   } = messages;
 
   return (
-    <Modal
-      overlayClassName={classes.overlayPanel}
-      className={`${classes.container} ${notoSans.className}`}
-      isOpen={visible}
+    <MessageModal
+      visible={visible}
+      message={message}
+      primaryButtonText={primaryButtonText}
+      primaryButtonHandler={primaryButtonHandler}
+      secondaryButtonText={secondaryButtonText}
+      secondaryButtonHandler={secondaryButtonHandler}
       onRequestClose={() => {
         dispatch(messagesActions.hideMessage());
       }}
-    >
-      <div className={classes.message}>
-        {message}
-      </div>
-
-      <div className={classes.buttonsContainer}>
-        {(secondaryButtonText && secondaryButtonText.trim() !== "") &&
-          <TransparentButton className={`${classes.secondaryButton} ${notoSans.className}`} onClick={secondaryButtonHandler}>{secondaryButtonText}</TransparentButton>
-        }
-        {(primaryButtonText && primaryButtonText.trim() !== "") &&
-          <RoundedButton className={`${classes.primaryButton} ${notoSans.className}`} onClick={primaryButtonHandler}>{primaryButtonText}</RoundedButton>
-        }
-      </div>
-    </Modal>
+    />
   );
 }
 

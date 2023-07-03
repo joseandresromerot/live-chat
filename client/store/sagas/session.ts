@@ -2,7 +2,7 @@ import * as Effects from "redux-saga/effects";
 import { SessionAction, Types, actions } from '../reducers/session';
 import { actions as messagesActions } from '../reducers/messages';
 import { actions as sessionActions } from '../reducers/session';
-import { LoginResponse, login as loginApi } from '@/pages/middleware/api';
+import { LoginResponse, login as loginApi, storeAccessToken } from '@/middleware/api';
 
 const { takeLatest, fork, put } = Effects;
 const call: any = Effects.call;
@@ -18,38 +18,17 @@ function* login(action: SessionAction) {
         yield put(messagesActions.hideMessage());
 
         if (response.data.success === true) {
-            //yield call(BaseApi.registerSuccessfulLoginForJwt, action.payload.username, response.token);
-            
+            //yield call(storeAccessToken, response.data.token);
             yield put(sessionActions.loginSuccess(response.data.user?.username || "", response.data.user?.fullname || "", response.data.user?.avatar_url || ""));
+            action.onSuccess && action.onSuccess();
         } else {
-            yield put(messagesActions.showMessage(
-              response.data.error || "Error",
-              "Ok",
-              () => {
-                action.messageHideHandler && action.messageHideHandler();
-              },
-              null,
-              null
-            ));
-
             yield put(sessionActions.loginFailure());
+            action.onError && action.onError(response.data.error || "Unespected error");
         }
     } catch(err: any) {
         console.info(err);
-
-        yield put(messagesActions.hideMessage());
-
-        yield put(messagesActions.showMessage(
-          err.toSring(),
-          "Ok",
-          () => {
-            action.messageHideHandler && action.messageHideHandler();
-          },
-          null,
-          null
-        ));
-
         yield put(sessionActions.loginFailure());
+        action.onError && action.onError(err.toSring() || "Unespected error");
     }
 }
 

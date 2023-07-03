@@ -23,7 +23,8 @@ export interface SessionAction {
   password?: string
   fullname?: string
   avatar_url?: string | null
-  messageHideHandler?: () => void
+  onSuccess?: () => void
+  onError?: (message: string) => void
   payload?: any
 }
 
@@ -61,11 +62,12 @@ const sessionReducer = (state = initialState, action: SessionAction) => {
 };
 
 export const actions = {
-  loginRequest: (username: string, password: string, messageHideHandler: () => void): SessionAction => ({
+  loginRequest: (username: string, password: string, onSuccess: () => void, onError: (message: string) => void): SessionAction => ({
     type: Types.LOGIN_REQUEST,
     username,
     password,
-    messageHideHandler
+    onSuccess,
+    onError
   }),
   
   loginSuccess: (username: string, fullname: string, avatar_url: string): SessionAction => ({

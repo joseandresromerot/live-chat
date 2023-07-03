@@ -1,9 +1,11 @@
 const express = require("express");
 const cors = require('cors');
+const cookieParser = require('cookie-parser')
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
 const AppUser = require('./db/models').AppUser;
 const { v4: uuidv4 } = require('uuid');
+const auth = require("./middleware/auth");
 
 require('dotenv').config();
 
@@ -12,12 +14,26 @@ const HOST = '0.0.0.0';
 
 const app = express();
 
-app.use(cors());
+var corsOptions = {
+    origin: 'http://localhost:3000',
+    credentials: true,
+    //optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+
+app.use(cors(corsOptions));
 app.use(express.json({ limit: "50mb" }));
+app.use(cookieParser())
 
 app.get("/api", async (req, res) => {
     const users = await AppUser.findAll();
     res.json({ message: "Hola desde el servidor!", user: users[0].toJSON() });
+});
+
+app.get("/test", auth, async (req, res) => {
+    // Cookies that have not been signed
+    console.log('user: ', req.user);
+    
+    res.json({ message: "ok"});
 });
 
 app.post("/login", async (req, res) => {
@@ -35,17 +51,16 @@ app.post("/login", async (req, res) => {
                 { user_id: user.id, username },
                 process.env.JWT_TOKEN_KEY,
                 {
-                expiresIn: "2h",
+                    expiresIn: "2h",
                 }
             );
 
-            res.status(200).json({
+            res.cookie("access_token", token, { httpOnly: true }).status(200).json({
                 success: true,
                 user: {
                     username: user.username,
                     fullname: user.fullname,
-                    avatar_url: user.avatar_url,
-                    token
+                    avatar_url: user.avatar_url
                 }
             });
             return;

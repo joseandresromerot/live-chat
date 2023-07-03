@@ -4,6 +4,10 @@ import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
 import Head from 'next/head';
 import { Noto_Sans } from 'next/font/google';
+import axios from 'axios';
+
+axios.defaults.withCredentials = true;
+axios.defaults.baseURL = 'http://localhost:3003';
 
 const notoSans = Noto_Sans({
   weight: ['300', '400', '500', '600', '700'],
