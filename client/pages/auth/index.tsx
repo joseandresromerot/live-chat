@@ -25,16 +25,18 @@ interface AuthPageState {
   }
 }
 
+const FORM_INITIAL_STATE: AuthPageState["formData"] = {
+  username: "",
+  password: "",
+  fullname: "",
+  avatar_url: ""
+};
+
 const AuthPage = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const [isLoginPage, setIsLoginPage] = useState<AuthPageState["isLoginPage"]>(true);
-  const [formData, setFormData] = useState<AuthPageState["formData"]>({
-    username: "",
-    password: "",
-    fullname: "",
-    avatar_url: ""
-  });
+  const [formData, setFormData] = useState<AuthPageState["formData"]>(FORM_INITIAL_STATE);
   const [messageProps, setMessageProps] = useState<AuthPageState["errorMessageProps"]>({
     visible: false,
     message: ""
@@ -51,21 +53,45 @@ const AuthPage = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.info('username, password', username, password);
-    dispatch(sessionActons.loginRequest(
-      username,
-      password,
-      () => {
-        router.replace("/");
-        //test()
-        //  .then(() => {});
-      },
-      (error) => {
-        setMessageProps({
-          visible: true,
-          message: error
-        });
-      }
-    ));
+
+    if (isLoginPage) {
+      dispatch(sessionActons.loginRequest(
+        username,
+        password,
+        () => {
+          router.replace("/");
+          //test()
+          //  .then(() => {});
+        },
+        (error) => {
+          setMessageProps({
+            visible: true,
+            message: error
+          });
+        }
+      ));
+    } else {
+      dispatch(sessionActons.registerRequest(
+        username,
+        password,
+        fullname,
+        avatar_url,
+        () => {
+          setFormData(FORM_INITIAL_STATE);
+          setIsLoginPage(true);
+          setMessageProps({
+            visible: true,
+            message: "User registered successfully"
+          });
+        },
+        (error) => {
+          setMessageProps({
+            visible: true,
+            message: error
+          });
+        }
+      ));
+    }
   };
 
   const hideMessage = () => {

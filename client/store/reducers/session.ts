@@ -79,6 +79,31 @@ export const actions = {
   
   loginFailure: (): SessionAction => ({
     type: Types.LOGIN_FAILURE
+  }),
+
+  registerRequest: (
+    username: string,
+    password: string,
+    fullname: string,
+    avatar_url: string,
+    onSuccess: () => void,
+    onError: (message: string) => void
+  ) => ({
+    type: Types.REGISTER_REQUEST,
+    username,
+    password,
+    fullname,
+    avatar_url,
+    onSuccess,
+    onError
+  }),
+  
+  registerSuccess: (): SessionAction => ({
+    type: Types.REGISTER_SUCCESS
+  }),
+  
+  registerFailure: (): SessionAction => ({
+    type: Types.REGISTER_FAILURE
   })
 };
 

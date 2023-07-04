@@ -67,7 +67,7 @@ app.post("/login", async (req, res) => {
         }
         res.status(200).send({ success: false, error: "Invalid Credentials" });
     } catch (err) {
-        console.log(err);
+        return res.status(200).send({ success: false, error: err.message });
     }
 });
 
@@ -76,13 +76,13 @@ app.post("/register", async (req, res) => {
         const { fullname, avatar_url, username, password } = req.body;
 
         if (!(username && password && fullname)) {
-            res.status(400).send("Enter username, password and full name");
+            res.status(200).send({ success: false, error: "Enter username, password and full name" });
         }
 
         const oldUser = await AppUser.findOne({ where: { username } });
 
         if (oldUser) {
-            return res.status(409).send("User Already Exist. Please Login");
+            return res.status(200).send({ success: false, error: "User Already Exist. Please Login" });
         }
 
         const encryptedPassword = await bcrypt.hash(password, 10);
@@ -95,22 +95,9 @@ app.post("/register", async (req, res) => {
             password: encryptedPassword,
         });
 
-        const token = jwt.sign(
-            { user_id: user.id, username },
-            process.env.JWT_TOKEN_KEY,
-            {
-                expiresIn: "2h",
-            }
-        );
-
-        res.status(201).json({
-            username: user.username,
-            fullname: user.fullname,
-            avatar_url: user.avatar_url,
-            token
-        });
+        res.status(201).json({ success: true });
     } catch (err) {
-        console.log(err);
+        return res.status(200).send({ success: false, error: err.message });
     }
 });
 

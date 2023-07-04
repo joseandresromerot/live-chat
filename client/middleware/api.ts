@@ -15,6 +15,13 @@ export interface LoginResponse {
   }
 }
 
+export interface RegisterResponse {
+  data: {
+    success: boolean
+    error?: string
+  }
+}
+
 export const login = (username: string, password: string): Promise<LoginResponse> => {
   let data = JSON.stringify({
     "username": username,
@@ -25,6 +32,27 @@ export const login = (username: string, password: string): Promise<LoginResponse
     method: 'post',
     maxBodyLength: Infinity,
     url: '/login',
+    headers: { 
+      'Content-Type': 'application/json'
+    },
+    data : data
+  };
+  
+  return axios(config);
+}
+
+export const register = (username: string, password: string, fullname: string, avatar_url: string): Promise<RegisterResponse> => {
+  let data = JSON.stringify({
+    "username": username,
+    "password": password,
+    "fullname": fullname,
+    "avatar_url": avatar_url
+  });
+  
+  let config = {
+    method: 'post',
+    maxBodyLength: Infinity,
+    url: '/register',
     headers: { 
       'Content-Type': 'application/json'
     },
