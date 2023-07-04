@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser')
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
 const AppUser = require('./db/models').AppUser;
+const ChannelAppUser = require('./db/models').ChannelAppUser;
 const { v4: uuidv4 } = require('uuid');
 const auth = require("./middleware/auth");
 
@@ -34,6 +35,10 @@ app.get("/test", auth, async (req, res) => {
     console.log('user: ', req.user);
     
     res.json({ message: "ok"});
+});
+
+app.get("/getuserinfo", auth, async (req, res) => {
+    res.json({ success: true, user: req.user });
 });
 
 app.post("/login", async (req, res) => {
@@ -93,6 +98,12 @@ app.post("/register", async (req, res) => {
             avatar_url,
             username: username.toLowerCase(), // sanitize: convert email to lowercase
             password: encryptedPassword,
+        });
+
+        await ChannelAppUser.create({
+            id: uuidv4(),
+            channel_id: 'f9d8cd62-5161-40b9-8d60-a6f804a5f46a',
+            appuser_id: user.id
         });
 
         res.status(201).json({ success: true });

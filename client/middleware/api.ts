@@ -2,15 +2,17 @@ import axios from "axios";
 
 const ACCESS_TOKEN_KEY: string = "live_chat/ACCESS_TOKEN_KEY";
 
+export interface UserInfo {
+  username: string
+  fullname: string,
+  avatar_url: string | null
+}
+
 export interface LoginResponse {
   data: {
     success: boolean
     error?: string
-    user?: {
-      username: string
-      fullname: string,
-      avatar_url: string | null
-    }
+    user?: UserInfo
     token: string
   }
 }
@@ -19,6 +21,14 @@ export interface RegisterResponse {
   data: {
     success: boolean
     error?: string
+  }
+}
+
+export interface GetUserInfoResponse {
+  data: {
+    success: boolean
+    error?: string
+    user?: UserInfo
   }
 }
 
@@ -60,6 +70,10 @@ export const register = (username: string, password: string, fullname: string, a
   };
   
   return axios(config);
+}
+
+export const getUserInfo = (): Promise<GetUserInfoResponse> => {
+  return axios.get("/getuserinfo");
 }
 
 export const test = (): Promise<{ data: { message: string } }> => {

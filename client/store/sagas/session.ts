@@ -2,7 +2,7 @@ import * as Effects from "redux-saga/effects";
 import { SessionAction, Types, actions } from '../reducers/session';
 import { actions as messagesActions } from '../reducers/messages';
 import { actions as sessionActions } from '../reducers/session';
-import { LoginResponse, RegisterResponse, login as loginApi, register as registerApi } from '@/middleware/api';
+import { LoginResponse, RegisterResponse, login as loginApi, register as registerApi, getUserInfo as getUserInfoApi, GetUserInfoResponse } from '@/middleware/api';
 
 const { takeLatest, fork, put } = Effects;
 const call: any = Effects.call;
@@ -26,6 +26,7 @@ function* login(action: SessionAction) {
         }
     } catch(err: any) {
         console.info(err);
+        yield put(messagesActions.hideMessage());
         yield put(sessionActions.loginFailure());
         action.onError && action.onError(err.message || "Unexpected error");
     }
@@ -54,6 +55,7 @@ function* register(action: SessionAction) {
         }
     } catch(err: any) {
         console.info(err);
+        yield put(messagesActions.hideMessage());
         yield put(sessionActions.registerFailure());
         action.onError && action.onError(err.message || "Unexpected error");
     }
@@ -63,9 +65,43 @@ function* watchRegisterRequest() {
     yield takeLatest(Types.REGISTER_REQUEST, register);
 }
 
+function* getUserInfo(action: SessionAction) {
+  console.info('getUserInfo action', action);
+    try {
+        yield put(messagesActions.showLoading());
+        const response: GetUserInfoResponse = yield call(getUserInfoApi);
+
+        console.info("getUserInfo RESPONSE", response);
+
+        yield put(messagesActions.hideMessage());
+
+        if (response.data.success === true) {
+            yield put(sessionActions.getUserInfoSuccess(
+                response.data.user?.username || "",
+                response.data.user?.fullname || "",
+                response.data.user?.avatar_url || ""
+            ));
+            action.onSuccess && action.onSuccess();
+        } else {
+            yield put(sessionActions.getUserInfoFailure());
+            action.onError && action.onError(response.data.error || "Unexpected error");
+        }
+    } catch(err: any) {
+        //console.info(err);
+        yield put(messagesActions.hideMessage());
+        yield put(sessionActions.getUserInfoFailure());
+        action.onError && action.onError(err.message || "Unexpected error");
+    }
+}
+
+function* watchGetUserInfoRequest() {
+    yield takeLatest(Types.GET_USER_INFO_REQUEST, getUserInfo);
+}
+
 const sessionSagas = [
     fork(watchLoginRequest),
     fork(watchRegisterRequest),
+    fork(watchGetUserInfoRequest),
 ];
 
 export default sessionSagas;

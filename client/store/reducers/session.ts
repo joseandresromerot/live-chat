@@ -8,6 +8,10 @@ export const Types = {
   REGISTER_REQUEST: "session/REGISTER_REQUEST",
   REGISTER_SUCCESS: "session/REGISTER_SUCCESS",
   REGISTER_FAILURE: "session/REGISTER_FAILURE",
+
+  GET_USER_INFO_REQUEST: "session/GET_USER_INFO_REQUEST",
+  GET_USER_INFO_SUCCESS: "session/GET_USER_INFO_SUCCESS",
+  GET_USER_INFO_FAILURE: "session/GET_USER_INFO_FAILURE",
 };
 
 export interface SessionState {
@@ -49,6 +53,22 @@ const sessionReducer = (state = initialState, action: SessionAction) => {
         avatar_url: action.avatar_url
       };
     case Types.LOGIN_FAILURE:
+      return {
+        ...state,
+        authenticated: false,
+        username: null,
+        fullname: null,
+        avatar_url: null
+      };
+    case Types.GET_USER_INFO_SUCCESS:
+      return {
+        ...state,
+        authenticated: true,
+        username: action.username,
+        fullname: action.fullname,
+        avatar_url: action.avatar_url
+      };
+    case Types.GET_USER_INFO_FAILURE:
       return {
         ...state,
         authenticated: false,
@@ -104,6 +124,23 @@ export const actions = {
   
   registerFailure: (): SessionAction => ({
     type: Types.REGISTER_FAILURE
+  }),
+
+  getUserInfoRequest: (onSuccess: () => void, onError: (message: string) => void): SessionAction => ({
+    type: Types.GET_USER_INFO_REQUEST,
+    onSuccess,
+    onError
+  }),
+  
+  getUserInfoSuccess: (username: string, fullname: string, avatar_url: string): SessionAction => ({
+    type: Types.GET_USER_INFO_SUCCESS,
+    username,
+    fullname,
+    avatar_url
+  }),
+  
+  getUserInfoFailure: (): SessionAction => ({
+    type: Types.GET_USER_INFO_FAILURE
   })
 };
 
