@@ -1,4 +1,5 @@
 import classes from './index.module.css';
+import Sidebar from './sidebar';
 
 interface RootLayoutProps {
   children: JSX.Element | JSX.Element[]
@@ -7,7 +8,7 @@ interface RootLayoutProps {
 const RootLayout = ({ children }: RootLayoutProps) => {
   return (
     <div className={classes.mainContainer}>
-      <div className={classes.sidebar}></div>
+      <Sidebar />
       <div className={classes.content}>{children}</div>
     </div>
   );

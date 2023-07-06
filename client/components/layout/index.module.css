@@ -6,11 +6,6 @@
   align-items: stretch;
 }
 
-.sidebar {
-  width: 324px;
-  background: red;
-}
-
 .content {
   flex: 1;
   display: flex;

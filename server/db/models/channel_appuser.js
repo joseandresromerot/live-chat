@@ -23,7 +23,8 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'ChannelAppUser',
     tableName: 'channel_appuser',
-    timestamps: false
+    timestamps: false,
+    underscored: true
   });
   return ChannelAppUser;
 };

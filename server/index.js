@@ -3,10 +3,10 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser')
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
-const AppUser = require('./db/models').AppUser;
-const ChannelAppUser = require('./db/models').ChannelAppUser;
 const { v4: uuidv4 } = require('uuid');
 const auth = require("./middleware/auth");
+const db = require('./db/models');
+const { sequelize, AppUser, Channel, ChannelAppUser } = db;
 
 require('dotenv').config();
 
@@ -39,6 +39,30 @@ app.get("/test", auth, async (req, res) => {
 
 app.get("/getuserinfo", auth, async (req, res) => {
     res.json({ success: true, user: req.user });
+});
+
+app.get("/channel/info/:channel", auth, async (req, res) => {
+    const channelId = req.params.channel;
+    const channel = await Channel.findByPk(channelId);
+
+    if (!channel) {
+        res.json({ success: false, error: "Channel not found" });
+        return;
+    }
+
+    const userInChannel = await ChannelAppUser.findOne({ where: { channel_id: channelId, appuser_id: req.user.user_id } });
+
+    if (!userInChannel) {
+        res.json({ success: false, error: "User doesn't belong to the channel" });
+        return;
+    }
+
+    const members = await sequelize.query(`SELECT B.id, B.username, B.fullname, B.avatar_url FROM channel_appuser A INNER JOIN appuser B ON A.appuser_id = B.id WHERE A.channel_id = '${channelId}'`, {
+        model: AppUser,
+        mapToModel: true
+    });
+
+    res.json({ success: true, channel: { ...channel.toJSON(), members } });
 });
 
 app.post("/login", async (req, res) => {

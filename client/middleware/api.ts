@@ -32,6 +32,20 @@ export interface GetUserInfoResponse {
   }
 }
 
+export interface ChannelInfo {
+  name: string
+  description: string
+  members: UserInfo[]
+}
+
+export interface GetChannelInfoResponse {
+  data: {
+    success: boolean
+    error?: string
+    channel?: ChannelInfo
+  }
+}
+
 export const login = (username: string, password: string): Promise<LoginResponse> => {
   let data = JSON.stringify({
     "username": username,
@@ -74,6 +88,10 @@ export const register = (username: string, password: string, fullname: string, a
 
 export const getUserInfo = (): Promise<GetUserInfoResponse> => {
   return axios.get("/getuserinfo");
+}
+
+export const getChannelInfo = (channelId: string): Promise<GetChannelInfoResponse> => {
+  return axios.get(`/channel/info/${channelId}`);
 }
 
 export const test = (): Promise<{ data: { message: string } }> => {
