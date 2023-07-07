@@ -1,3 +1,4 @@
+import classes from './channel-page.module.css';
 import AuthenticatedPage from "@/components/auth/auth-page"
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";

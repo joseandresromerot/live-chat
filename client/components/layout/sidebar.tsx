@@ -1,10 +1,22 @@
+import { useSelector } from 'react-redux';
 import SidebarChannelInfo from '../channel-info';
 import classes from './sidebar.module.css';
+import { RootState } from '@/store/reducers';
+import { SIDEBAR_MODES } from '@/store/reducers/channel';
+import SidebarChannelsList from '../channels-list';
 
 const Sidebar = () => {
+  const { sidebarMode } = useSelector((state: RootState) => state.channel);
+
   return (
     <div className={classes.sidebar}>
-      <SidebarChannelInfo />
+      {sidebarMode === SIDEBAR_MODES.CHANNEL_INFO &&
+        <SidebarChannelInfo />
+      }
+
+      {sidebarMode === SIDEBAR_MODES.CHANNELS_LIST &&
+        <SidebarChannelsList />
+      }
     </div>
   );
 };

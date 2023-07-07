@@ -1,7 +1,12 @@
 import * as Effects from "redux-saga/effects";
-import { ChannelAction, Types, actions as channelActions } from '../reducers/channel';
+import { ChannelAction, SIDEBAR_MODES, Types, actions as channelActions } from '../reducers/channel';
 import { actions as messagesActions } from '../reducers/messages';
-import { getChannelInfo as getChannelInfoApi, GetChannelInfoResponse } from '@/middleware/api';
+import {
+    getChannelInfo as getChannelInfoApi,
+    getChannels as getChannelsApi,
+    GetChannelInfoResponse,
+    GetChannelsResponse
+} from '@/middleware/api';
 
 const { takeLatest, fork, put } = Effects;
 const call: any = Effects.call;
@@ -15,6 +20,7 @@ function* getChannelInfo(action: ChannelAction) {
 
         if (response.data.success === true) {
             yield put(channelActions.getChannelInfoSuccess(response.data.channel));
+            yield put(channelActions.setSidebarMode(SIDEBAR_MODES.CHANNEL_INFO));
             action.onSuccess && action.onSuccess();
         } else {
             yield put(channelActions.getChannelInfoFailure());
@@ -32,8 +38,35 @@ function* watchGetChannelInfoRequest() {
     yield takeLatest(Types.GET_CHANNEL_INFO_REQUEST, getChannelInfo);
 }
 
+function* getChannels(action: ChannelAction) {
+    try {
+        yield put(messagesActions.showLoading());
+        const response: GetChannelsResponse = yield call(getChannelsApi, action.keyword);
+
+        yield put(messagesActions.hideMessage());
+
+        if (response.data.success === true) {
+            yield put(channelActions.getChannelsSuccess(response.data.channels));
+            action.onSuccess && action.onSuccess();
+        } else {
+            yield put(channelActions.getChannelsFailure());
+            action.onError && action.onError(response.data.error || "Unexpected error");
+        }
+    } catch(err: any) {
+        //console.info(err);
+        yield put(messagesActions.hideMessage());
+        yield put(channelActions.getChannelsFailure());
+        action.onError && action.onError(err.message || "Unexpected error");
+    }
+}
+
+function* watchGetChannelsRequest() {
+    yield takeLatest(Types.GET_CHANNELS_REQUEST, getChannels);
+}
+
 const channelSagas = [
     fork(watchGetChannelInfoRequest),
+    fork(watchGetChannelsRequest),
 ];
 
 export default channelSagas;

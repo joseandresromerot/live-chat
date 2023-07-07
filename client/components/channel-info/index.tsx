@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store/reducers';
 
 const SidebarChannelInfo = () => {
-  const { channelInfo } = useSelector((state: RootState) => state.channel);
+  const { channelInfo, } = useSelector((state: RootState) => state.channel);
 
   return (
     <>

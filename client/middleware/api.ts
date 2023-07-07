@@ -34,6 +34,7 @@ export interface GetUserInfoResponse {
 }
 
 export interface ChannelInfo {
+  id: string
   name: string
   description: string
   members: UserInfo[]
@@ -44,6 +45,14 @@ export interface GetChannelInfoResponse {
     success: boolean
     error?: string
     channel?: ChannelInfo
+  }
+}
+
+export interface GetChannelsResponse {
+  data: {
+    success: boolean
+    error?: string
+    channels?: ChannelInfo[]
   }
 }
 
@@ -93,6 +102,20 @@ export const getUserInfo = (): Promise<GetUserInfoResponse> => {
 
 export const getChannelInfo = (channelId: string): Promise<GetChannelInfoResponse> => {
   return axios.get(`/channel/info/${channelId}`);
+}
+
+export const getChannels = (keyword: string): Promise<GetChannelsResponse> => {
+  return axios({
+    method: 'post',
+    maxBodyLength: Infinity,
+    url: "/channel/list",
+    headers: { 
+      'Content-Type': 'application/json'
+    },
+    data : JSON.stringify({
+      "keyword": keyword
+    })
+  });
 }
 
 export const test = (): Promise<{ data: { message: string } }> => {

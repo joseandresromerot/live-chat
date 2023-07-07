@@ -7,6 +7,10 @@ export const Types = {
   GET_CHANNEL_INFO_REQUEST: "channel/GET_CHANNEL_INFO_REQUEST",
   GET_CHANNEL_INFO_SUCCESS: "channel/GET_CHANNEL_INFO_SUCCESS",
   GET_CHANNEL_INFO_FAILURE: "channel/GET_CHANNEL_INFO_FAILURE",
+  
+  GET_CHANNELS_REQUEST: "channel/GET_CHANNELS_REQUEST",
+  GET_CHANNELS_SUCCESS: "channel/GET_CHANNELS_SUCCESS",
+  GET_CHANNELS_FAILURE: "channel/GET_CHANNELS_FAILURE",
 };
 
 export const SIDEBAR_MODES = {
@@ -17,6 +21,7 @@ export const SIDEBAR_MODES = {
 export interface ChannelState {
   sidebarMode: string
   channelInfo: ChannelInfo | null | undefined
+  channels: ChannelInfo[]
 }
 
 export interface ChannelAction {
@@ -24,6 +29,8 @@ export interface ChannelAction {
   sidebarMode?: string
   channelInfo?: ChannelInfo
   channelId?: string
+  keyword?: string
+  channels?: ChannelInfo[]
   onSuccess?: () => void
   onError?: (message: string) => void
   payload?: any
@@ -31,7 +38,8 @@ export interface ChannelAction {
 
 const initialState: ChannelState = {
   sidebarMode: SIDEBAR_MODES.CHANNELS_LIST,
-  channelInfo: null
+  channelInfo: null,
+  channels: []
 };
 
 const channelReducer = (state = initialState, action: ChannelAction) => {
@@ -56,6 +64,18 @@ const channelReducer = (state = initialState, action: ChannelAction) => {
       return {
         ...state,
         channelInfo: null,
+      };
+
+    case Types.GET_CHANNELS_SUCCESS:
+      return {
+        ...state,
+        channels: action.channels,
+      };
+
+    case Types.GET_CHANNELS_FAILURE:
+      return {
+        ...state,
+        channels: null,
       };
 
     default:
@@ -98,6 +118,34 @@ export const actions = {
   getChannelInfoFailure: (): ChannelAction => {
     return {
       type: Types.GET_CHANNEL_INFO_FAILURE
+    }
+  },
+  
+  getChannelsRequest: (
+    keyword: string,
+    onSuccess: () => void,
+    onError: (message: string) => void
+  ): ChannelAction => {
+    return {
+      type: Types.GET_CHANNELS_REQUEST,
+      keyword,
+      onSuccess,
+      onError
+    }
+  },
+  
+  getChannelsSuccess: (
+    channels: ChannelInfo[] | undefined
+  ): ChannelAction => {
+    return {
+      type: Types.GET_CHANNELS_SUCCESS,
+      channels
+    }
+  },
+  
+  getChannelsFailure: (): ChannelAction => {
+    return {
+      type: Types.GET_CHANNELS_FAILURE
     }
   }
 };

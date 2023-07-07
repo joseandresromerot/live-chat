@@ -1,0 +1,31 @@
+.container {
+  background: #120F13;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  gap: 15px;
+  padding: 13px 13px 13px 32px;
+}
+
+.plus {
+  color: #F2F2F2;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #252329;
+  border: 0;
+  margin-left: 15px;
+}
+
+.title {
+  color: #E0E0E0;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: -0.63px;
+  margin: 0;
+}

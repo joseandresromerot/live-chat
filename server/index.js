@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require('uuid');
 const auth = require("./middleware/auth");
+const { Op } = require("sequelize");
 const db = require('./db/models');
 const { sequelize, AppUser, Channel, ChannelAppUser } = db;
 
@@ -63,6 +64,17 @@ app.get("/channel/info/:channel", auth, async (req, res) => {
     });
 
     res.json({ success: true, channel: { ...channel.toJSON(), members } });
+});
+
+app.post("/channel/list", auth, async (req, res) => {
+    try {
+        const { keyword } = req.body;
+        const channels = await Channel.findAll({ where: { name: { [Op.iLike]: `%${keyword.trim()}%` } } });
+        res.json({ success: true, channels });
+    } catch(err) {
+        res.json({ success: false, error: err.message });
+    }
+    
 });
 
 app.post("/login", async (req, res) => {

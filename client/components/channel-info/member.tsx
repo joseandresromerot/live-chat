@@ -5,8 +5,10 @@ export interface SidebarChannelMemberProps {
   name: string
 }
 
+const FALLBACK_IMAGE = 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png';
+
 const SidebarChannelMember = ({ avatarUrl, name }: SidebarChannelMemberProps) => {
-  const backgroundImage = avatarUrl && avatarUrl.trim() !== "" ? `url(${avatarUrl})` : "none";
+  const backgroundImage = `url(${avatarUrl && avatarUrl.trim() !== "" ? avatarUrl : FALLBACK_IMAGE})`;
 
   return (
     <div className={classes.container}>
