@@ -2,18 +2,18 @@ import { combineReducers } from "redux";
 import simple, { SimpleState } from "./simple";
 import messages, { MessagesState } from "./messages";
 import session, { SessionState } from "./session";
-import chat, { ChatState } from "./chat";
+import channel, { ChannelState } from "./channel";
 
 export interface RootState {
   simple: SimpleState
   messages: MessagesState
   session: SessionState
-  chat: ChatState
+  channel: ChannelState
 }
 
 export default combineReducers({
   simple,
   messages,
   session,
-  chat
+  channel
 });

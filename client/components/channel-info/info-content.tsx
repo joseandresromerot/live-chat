@@ -17,6 +17,7 @@ const SidebarChannelInfoContent = ({ title, description, members }: InfoContentP
       <div className={classes.members}>
         {members.map(m => (
           <SidebarChannelMember
+            key={m.id}
             avatarUrl={m.avatar_url || ""}
             name={m.fullname}
           />

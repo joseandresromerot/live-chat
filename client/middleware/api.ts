@@ -3,6 +3,7 @@ import axios from "axios";
 const ACCESS_TOKEN_KEY: string = "live_chat/ACCESS_TOKEN_KEY";
 
 export interface UserInfo {
+  id: string
   username: string
   fullname: string,
   avatar_url: string | null

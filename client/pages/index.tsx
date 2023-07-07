@@ -1,11 +1,16 @@
-import AuthenticatedPage from "@/components/auth/auth-page"
-
 const Home = () => {
   return (
-    <AuthenticatedPage>
-      <h1>Hello</h1>
-    </AuthenticatedPage>
+    <h1>Hello</h1>
   )
 };
+
+export async function getServerSideProps() {
+  return {
+    redirect: {
+      destination: "/f9d8cd62-5161-40b9-8d60-a6f804a5f46a",
+      permanent: false
+    }
+  };
+}
 
 export default Home;

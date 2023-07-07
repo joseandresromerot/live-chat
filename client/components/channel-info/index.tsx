@@ -1,18 +1,10 @@
-import { useEffect, useState } from 'react';
-import classes from './index.module.css';
 import SidebarChannelInfoContent from './info-content';
 import SidebarChannelInfoTopBar from './top-bar';
-import { ChannelInfo, getChannelInfo } from '@/middleware/api';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/reducers';
 
 const SidebarChannelInfo = () => {
-  const [channelInfo, setChannelInfo] = useState<ChannelInfo>();
-  useEffect(() => {
-    getChannelInfo('f9d8cd62-5161-40b9-8d60-a6f804a5f46a')
-      .then((response) => {
-        console.info('response', response);
-        setChannelInfo(response.data.channel);
-      })
-  }, []);
+  const { channelInfo } = useSelector((state: RootState) => state.channel);
 
   return (
     <>

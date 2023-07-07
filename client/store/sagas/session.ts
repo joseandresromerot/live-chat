@@ -8,12 +8,9 @@ const { takeLatest, fork, put } = Effects;
 const call: any = Effects.call;
 
 function* login(action: SessionAction) {
-  console.info('login action', action);
     try {
         yield put(messagesActions.showLoading());
         const response: LoginResponse = yield call(loginApi, action.username, action.password);
-
-        console.info("LOGIN RESPONSE", response);
 
         yield put(messagesActions.hideMessage());
 
@@ -37,12 +34,9 @@ function* watchLoginRequest() {
 }
 
 function* register(action: SessionAction) {
-  console.info('register action', action);
     try {
         yield put(messagesActions.showLoading());
         const response: RegisterResponse = yield call(registerApi, action.username, action.password, action.fullname, action.avatar_url);
-
-        console.info("REGISTER RESPONSE", response);
 
         yield put(messagesActions.hideMessage());
 
@@ -66,12 +60,9 @@ function* watchRegisterRequest() {
 }
 
 function* getUserInfo(action: SessionAction) {
-  console.info('getUserInfo action', action);
     try {
         yield put(messagesActions.showLoading());
         const response: GetUserInfoResponse = yield call(getUserInfoApi);
-
-        console.info("getUserInfo RESPONSE", response);
 
         yield put(messagesActions.hideMessage());
 
