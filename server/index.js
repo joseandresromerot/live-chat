@@ -7,7 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 const auth = require("./middleware/auth");
 const { Op } = require("sequelize");
 const db = require('./db/models');
-const { sequelize, AppUser, Channel, ChannelAppUser } = db;
+const { sequelize, AppUser, Channel, ChannelAppUser, Message } = db;
 
 require('dotenv').config();
 
@@ -69,6 +69,33 @@ app.get("/channel/info/:channel", auth, async (req, res) => {
     });
 
     res.json({ success: true, channel: { ...channel.toJSON(), members } });
+});
+
+app.get("/channel/messages/:channel", auth, async (req, res) => {
+    const channelId = req.params.channel;
+    const channel = await Channel.findByPk(channelId);
+
+    if (!channel) {
+        res.json({ success: false, error: "Channel not found" });
+        return;
+    }
+
+    const userInChannel = await ChannelAppUser.findOne({ where: { channel_id: channelId, appuser_id: req.user.user_id } });
+
+    if (!userInChannel) {
+        res.json({ success: false, error: "User doesn't belong to the channel" });
+        return;
+    }
+
+    const messages = await sequelize.query(
+        `SELECT A.id, A.content, A.created_at, A.appuser_id, B.fullname, B.avatar_url 
+        FROM message A 
+        INNER JOIN appuser B ON A.appuser_id = B.id 
+        WHERE A.channel_id = '${channelId}' 
+        ORDER BY A.created_at DESC`
+    );
+
+    res.json({ success: true, messages });
 });
 
 app.post("/channel/list", auth, async (req, res) => {
