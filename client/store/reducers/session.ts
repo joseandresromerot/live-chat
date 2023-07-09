@@ -45,6 +45,7 @@ const sessionReducer = (state = initialState, action: SessionAction) => {
       return { ...state, ...action.payload }
     }
     case Types.LOGIN_SUCCESS:
+      console.info('LOGIN_SUCCESS', action);
       return {
         ...state,
         authenticated: true,

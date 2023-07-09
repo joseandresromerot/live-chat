@@ -2,6 +2,9 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  height: 75px;
+  background: #0B090C;
+  padding: 0px 15px;
   gap: 28px;
 }
 
@@ -9,8 +12,16 @@
   color: #828282;
   font-size: 18px;
   font-style: normal;
-  font-weight: 600;
+  font-weight: 700;
   line-height: normal;
   letter-spacing: -0.63px;
-  margin: 0;
+  flex: 1;
+}
+
+.down {
+  color: #BDBDBD;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: 0;
 }

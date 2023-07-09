@@ -4,6 +4,7 @@ import classes from './sidebar.module.css';
 import { RootState } from '@/store/reducers';
 import { SIDEBAR_MODES } from '@/store/reducers/channel';
 import SidebarChannelsList from '../channels-list';
+import SidebarFooter from './sidebar-footer';
 
 const Sidebar = () => {
   const { sidebarMode } = useSelector((state: RootState) => state.channel);
@@ -17,6 +18,8 @@ const Sidebar = () => {
       {sidebarMode === SIDEBAR_MODES.CHANNELS_LIST &&
         <SidebarChannelsList />
       }
+
+      <SidebarFooter />
     </div>
   );
 };

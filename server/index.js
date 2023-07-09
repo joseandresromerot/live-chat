@@ -39,7 +39,12 @@ app.get("/test", auth, async (req, res) => {
 });
 
 app.get("/getuserinfo", auth, async (req, res) => {
-    res.json({ success: true, user: req.user });
+    const { id, fullname, avatar_url } = await AppUser.findByPk(req.user.user_id);
+    res.json({ success: true, user: {
+        id,
+        fullname,
+        avatar_url
+    } });
 });
 
 app.get("/channel/info/:channel", auth, async (req, res) => {

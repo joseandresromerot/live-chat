@@ -1,7 +1,6 @@
 import * as Effects from "redux-saga/effects";
-import { SessionAction, Types, actions } from '../reducers/session';
+import { SessionAction, Types, actions as sessionActions } from '../reducers/session';
 import { actions as messagesActions } from '../reducers/messages';
-import { actions as sessionActions } from '../reducers/session';
 import { LoginResponse, RegisterResponse, login as loginApi, register as registerApi, getUserInfo as getUserInfoApi, GetUserInfoResponse } from '@/middleware/api';
 
 const { takeLatest, fork, put } = Effects;
