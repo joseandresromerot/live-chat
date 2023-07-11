@@ -9,7 +9,7 @@
 .content {
   flex: 1;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: stretch;
   background: rgb(209, 209, 238);
 }

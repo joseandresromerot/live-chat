@@ -1,4 +1,4 @@
-import { ChannelInfo } from '@/middleware/api';
+import { ChannelInfo, Message } from '@/middleware/api';
 import { HYDRATE } from 'next-redux-wrapper';
 
 export const Types = {
@@ -7,6 +7,10 @@ export const Types = {
   GET_CHANNEL_INFO_REQUEST: "channel/GET_CHANNEL_INFO_REQUEST",
   GET_CHANNEL_INFO_SUCCESS: "channel/GET_CHANNEL_INFO_SUCCESS",
   GET_CHANNEL_INFO_FAILURE: "channel/GET_CHANNEL_INFO_FAILURE",
+
+  GET_CHANNEL_MESSAGES_REQUEST: "channel/GET_CHANNEL_MESSAGES_REQUEST",
+  GET_CHANNEL_MESSAGES_SUCCESS: "channel/GET_CHANNEL_MESSAGES_SUCCESS",
+  GET_CHANNEL_MESSAGES_FAILURE: "channel/GET_CHANNEL_MESSAGES_FAILURE",
   
   GET_CHANNELS_REQUEST: "channel/GET_CHANNELS_REQUEST",
   GET_CHANNELS_SUCCESS: "channel/GET_CHANNELS_SUCCESS",
@@ -21,6 +25,7 @@ export const SIDEBAR_MODES = {
 export interface ChannelState {
   sidebarMode: string
   channelInfo: ChannelInfo | null | undefined
+  messages: Message[]
   channels: ChannelInfo[]
 }
 
@@ -28,6 +33,7 @@ export interface ChannelAction {
   type: string
   sidebarMode?: string
   channelInfo?: ChannelInfo
+  messages?: Message[]
   channelId?: string
   keyword?: string
   channels?: ChannelInfo[]
@@ -39,6 +45,7 @@ export interface ChannelAction {
 const initialState: ChannelState = {
   sidebarMode: SIDEBAR_MODES.CHANNELS_LIST,
   channelInfo: null,
+  messages: [],
   channels: []
 };
 
@@ -66,6 +73,18 @@ const channelReducer = (state = initialState, action: ChannelAction) => {
         channelInfo: null,
       };
 
+    case Types.GET_CHANNEL_MESSAGES_SUCCESS:
+      return {
+        ...state,
+        messages: action.messages,
+      };
+
+    case Types.GET_CHANNEL_MESSAGES_FAILURE:
+      return {
+        ...state,
+        messages: [],
+      };
+
     case Types.GET_CHANNELS_SUCCESS:
       return {
         ...state,
@@ -75,7 +94,7 @@ const channelReducer = (state = initialState, action: ChannelAction) => {
     case Types.GET_CHANNELS_FAILURE:
       return {
         ...state,
-        channels: null,
+        channels: [],
       };
 
     default:
@@ -118,6 +137,34 @@ export const actions = {
   getChannelInfoFailure: (): ChannelAction => {
     return {
       type: Types.GET_CHANNEL_INFO_FAILURE
+    }
+  },
+  
+  getChannelMessagesRequest: (
+    channelId: string,
+    onSuccess: () => void,
+    onError: (message: string) => void
+  ): ChannelAction => {
+    return {
+      type: Types.GET_CHANNEL_MESSAGES_REQUEST,
+      channelId,
+      onSuccess,
+      onError
+    }
+  },
+  
+  getChannelMessagesSuccess: (
+    messages: Message[] | undefined
+  ): ChannelAction => {
+    return {
+      type: Types.GET_CHANNEL_MESSAGES_SUCCESS,
+      messages
+    }
+  },
+  
+  getChannelMessagesFailure: (): ChannelAction => {
+    return {
+      type: Types.GET_CHANNEL_MESSAGES_FAILURE
     }
   },
   

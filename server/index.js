@@ -88,14 +88,14 @@ app.get("/channel/messages/:channel", auth, async (req, res) => {
     }
 
     const messages = await sequelize.query(
-        `SELECT A.id, A.content, A.created_at, A.appuser_id, B.fullname, B.avatar_url 
+        `SELECT A.id, A.content, A.created_at, TO_CHAR(A.created_at, 'YYYYmmdd') AS created_at_text, A.appuser_id, B.fullname, B.avatar_url 
         FROM message A 
         INNER JOIN appuser B ON A.appuser_id = B.id 
         WHERE A.channel_id = '${channelId}' 
         ORDER BY A.created_at DESC`
     );
 
-    res.json({ success: true, messages });
+    res.json({ success: true, messages: messages[0] });
 });
 
 app.post("/channel/list", auth, async (req, res) => {
