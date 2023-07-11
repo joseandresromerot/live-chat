@@ -15,13 +15,15 @@ const ChannelMessagesList = ({ messages }: ChannelMessagesListProps) => {
 
   return (
     <div className={classes.container}>
-      {days.map(d => (
-        <ChannelMessagesListDay
-          key={d}
-          day={parse(d, "yyyyMMdd", new Date())}
-          messages={grouped[d]}
-        />
-      ))}
+      <div className={classes.subContainer}>
+        {days.map(d => (
+          <ChannelMessagesListDay
+            key={d}
+            day={parse(d, "yyyyMMdd", new Date())}
+            messages={grouped[d]}
+          />
+        ))}
+        </div>
     </div>
   );
 };

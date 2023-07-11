@@ -43,7 +43,7 @@ export interface ChannelInfo {
 export interface Message {
   id: string
   content: string
-  created_at: Date
+  created_at: string
   created_at_text: string
   appuser_id: string
   fullname: string

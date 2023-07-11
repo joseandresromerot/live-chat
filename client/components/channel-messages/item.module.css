@@ -1,3 +1,49 @@
 .container {
-  
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin-bottom: 50px;
+}
+
+.textContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin-left: 25px;
+}
+
+.title {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+}
+
+.name {
+  color: #828282;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: -0.63px;
+  margin: 0px 15px 0px 0px;
+}
+
+.date {
+  color: #828282;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: -0.49px;
+  margin: 0;
+}
+
+.content {
+  color: #E0E0E0;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: -0.63px;
+  margin: 12px 0px 0px 0px;
 }
