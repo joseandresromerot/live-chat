@@ -1,11 +1,17 @@
-.container {
-  display: table;
-  flex: 1;
+.subContainer {
+  padding: 40px 78px 0px 78px;
 }
 
-.subContainer {
-  display: table-cell;
-  vertical-align: bottom;
-  width: 100%;
-  padding: 40px 78px;
+.message1 {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem; 
+  padding-left: 0.5rem; 
+  padding-right: 1.25rem; 
+}
+
+.message2 {
+  padding: 0.5rem; 
+  border-radius: 0.5rem; 
+  color: #ffffff; 
+  background-color: #047857; 
 }
