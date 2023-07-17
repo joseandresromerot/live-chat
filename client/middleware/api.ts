@@ -43,8 +43,8 @@ export interface ChannelInfo {
 export interface Message {
   id: string
   content: string
-  created_at: string
-  created_at_text: string
+  created_at: number | Date
+  day?: string
   appuser_id: string
   fullname: string
   avatar_url: string
@@ -71,6 +71,14 @@ export interface GetChannelMessagesResponse {
     success: boolean
     error?: string
     messages?: Message[]
+  }
+}
+
+export interface SendChannelMessageResponse {
+  data: {
+    success: boolean
+    error?: string
+    newMessage?: Message
   }
 }
 
@@ -136,6 +144,21 @@ export const getChannels = (keyword: string): Promise<GetChannelsResponse> => {
     },
     data : JSON.stringify({
       "keyword": keyword
+    })
+  });
+}
+
+export const sendChannelMessage = (channelId: string, content: string): Promise<SendChannelMessageResponse> => {
+  return axios({
+    method: 'post',
+    maxBodyLength: Infinity,
+    url: "/channel/message",
+    headers: { 
+      'Content-Type': 'application/json'
+    },
+    data : JSON.stringify({
+      "channelId": channelId,
+      "content": content
     })
   });
 }

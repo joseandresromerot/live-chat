@@ -16,7 +16,7 @@ module.exports = {
       },
       created_at: {
         allowNull: false,
-        type: 'timestamp without time zone'
+        type: Sequelize.BIGINT
       },
       channel_id: {
         type: Sequelize.UUID,

@@ -1,7 +1,7 @@
 import { Message } from '@/middleware/api';
 import classes from './day.module.css';
 import ChannelMessagesListItem from './item';
-import { format } from 'date-fns';
+import { format, isAfter } from 'date-fns';
 
 interface ChannelMessagesListDayProps {
   day: Date
@@ -9,6 +9,10 @@ interface ChannelMessagesListDayProps {
 }
 
 const ChannelMessagesListDay = ({ day, messages }: ChannelMessagesListDayProps) => {
+  messages.sort((m1: Message, m2: Message) => {
+    return isAfter(m1.created_at, m2.created_at) ? 1 : -1;
+  });
+
   return (
     <div className={classes.container}>
       <div className={classes.dividerContainer}>

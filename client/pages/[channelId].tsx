@@ -47,7 +47,7 @@ const ChannelPage = () => {
         <>
           <ChannelMessagesTopBar title={channelInfo?.name || ""} />
           <ChannelMessagesList messages={messages} />
-          <ChannelMessagesNewMessageBar />
+          <ChannelMessagesNewMessageBar channelId={channelInfo?.id || ""} />
         </>
       )}
     </AuthenticatedPage>

@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true
     },
     content: DataTypes.TEXT,
+    created_at: DataTypes.BIGINT,
     channel_id: {
       type: DataTypes.UUID,
       references: {

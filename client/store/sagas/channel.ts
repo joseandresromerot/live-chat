@@ -5,10 +5,13 @@ import {
     getChannelInfo as getChannelInfoApi,
     getChannels as getChannelsApi,
     getChannelMessages as getChannelMessagesApi,
+    sendChannelMessage as sendChannelMessageApi,
     GetChannelInfoResponse,
     GetChannelsResponse,
-    GetChannelMessagesResponse
+    GetChannelMessagesResponse,
+    SendChannelMessageResponse
 } from '@/middleware/api';
+import { format } from "date-fns";
 
 const { takeLatest, fork, put } = Effects;
 const call: any = Effects.call;
@@ -44,11 +47,18 @@ function* getChannelMessages(action: ChannelAction) {
     try {
         yield put(messagesActions.showLoading());
         const response: GetChannelMessagesResponse = yield call(getChannelMessagesApi, action.channelId);
-console.info('response', response);
+
         yield put(messagesActions.hideMessage());
 
         if (response.data.success === true) {
-            yield put(channelActions.getChannelMessagesSuccess(response.data.messages));
+            yield put(channelActions.getChannelMessagesSuccess(response.data.messages?.map(message => {
+                const created_at: Date = new Date((message.created_at as number) * 1000)
+                return {
+                    ...message,
+                    created_at,
+                    day: format(created_at, "yyyyMMdd")
+                }
+            })));
             action.onSuccess && action.onSuccess();
         } else {
             yield put(channelActions.getChannelMessagesFailure());
@@ -92,10 +102,38 @@ function* watchGetChannelsRequest() {
     yield takeLatest(Types.GET_CHANNELS_REQUEST, getChannels);
 }
 
+function* sendChannelMessage(action: ChannelAction) {
+    try {
+        yield put(messagesActions.showLoading());
+        const response: SendChannelMessageResponse = yield call(sendChannelMessageApi, action.channelId, action.content);
+
+        yield put(messagesActions.hideMessage());
+
+        if (response.data.success === true) {
+            yield put(channelActions.sendChannelMessageSuccess());
+            yield put(channelActions.getChannelMessagesRequest(action.channelId || "", () => {}, () => {}));
+            action.onSuccess && action.onSuccess();
+        } else {
+            yield put(channelActions.sendChannelMessageFailure());
+            action.onError && action.onError(response.data.error || "Unexpected error");
+        }
+    } catch(err: any) {
+        //console.info(err);
+        yield put(messagesActions.hideMessage());
+        yield put(channelActions.sendChannelMessageFailure());
+        action.onError && action.onError(err.message || "Unexpected error");
+    }
+}
+
+function* watchSendChannelMessageRequest() {
+    yield takeLatest(Types.SEND_CHANNEL_MESSAGE_REQUEST, sendChannelMessage);
+}
+
 const channelSagas = [
     fork(watchGetChannelInfoRequest),
     fork(watchGetChannelsRequest),
     fork(watchGetChannelMessagesRequest),
+    fork(watchSendChannelMessageRequest),
 ];
 
 export default channelSagas;

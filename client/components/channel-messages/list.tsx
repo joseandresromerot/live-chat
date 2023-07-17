@@ -10,11 +10,11 @@ interface ChannelMessagesListProps {
 }
 
 const ChannelMessagesList = ({ messages }: ChannelMessagesListProps) => {
-  const grouped = groupBy(messages, "created_at_text");
+  const grouped = groupBy(messages, "day");
   const days = Object.keys(grouped);
 
   return (
-    <ScrollContainer outerDivClassName={classes.subContainer}>
+    <ScrollContainer outerDivClassName={classes.subContainer} scrollCta="New message">
       {days.map(d => (
           <ChannelMessagesListDay
             key={d}

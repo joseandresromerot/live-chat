@@ -15,6 +15,12 @@ export const Types = {
   GET_CHANNELS_REQUEST: "channel/GET_CHANNELS_REQUEST",
   GET_CHANNELS_SUCCESS: "channel/GET_CHANNELS_SUCCESS",
   GET_CHANNELS_FAILURE: "channel/GET_CHANNELS_FAILURE",
+  
+  SEND_CHANNEL_MESSAGE_REQUEST: "channel/SEND_CHANNEL_MESSAGE_REQUEST",
+  SEND_CHANNEL_MESSAGE_SUCCESS: "channel/SEND_CHANNEL_MESSAGE_SUCCESS",
+  SEND_CHANNEL_MESSAGE_FAILURE: "channel/SEND_CHANNEL_MESSAGE_FAILURE",
+
+  ADD_MESSAGE: "channel/ADD_MESSAGE"
 };
 
 export const SIDEBAR_MODES = {
@@ -34,9 +40,11 @@ export interface ChannelAction {
   sidebarMode?: string
   channelInfo?: ChannelInfo
   messages?: Message[]
+  message?: Message
   channelId?: string
   keyword?: string
   channels?: ChannelInfo[]
+  content?: string
   onSuccess?: () => void
   onError?: (message: string) => void
   payload?: any
@@ -95,6 +103,15 @@ const channelReducer = (state = initialState, action: ChannelAction) => {
       return {
         ...state,
         channels: [],
+      };
+
+    case Types.ADD_MESSAGE:
+      return {
+        ...state,
+        messages: [
+          ...state.messages,
+          action.message
+        ],
       };
 
     default:
@@ -193,6 +210,42 @@ export const actions = {
   getChannelsFailure: (): ChannelAction => {
     return {
       type: Types.GET_CHANNELS_FAILURE
+    }
+  },
+  
+  sendChannelMessageRequest: (
+    channelId: string,
+    content: string,
+    onSuccess: () => void,
+    onError: (message: string) => void
+  ): ChannelAction => {
+    return {
+      type: Types.SEND_CHANNEL_MESSAGE_REQUEST,
+      channelId,
+      content,
+      onSuccess,
+      onError
+    }
+  },
+  
+  sendChannelMessageSuccess: (): ChannelAction => {
+    return {
+      type: Types.SEND_CHANNEL_MESSAGE_SUCCESS
+    }
+  },
+  
+  sendChannelMessageFailure: (): ChannelAction => {
+    return {
+      type: Types.SEND_CHANNEL_MESSAGE_FAILURE
+    }
+  },
+  
+  addMessage: (
+    message: Message
+  ): ChannelAction => {
+    return {
+      type: Types.ADD_MESSAGE,
+      message
     }
   }
 };

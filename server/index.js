@@ -88,7 +88,7 @@ app.get("/channel/messages/:channel", auth, async (req, res) => {
     }
 
     const messages = await sequelize.query(
-        `SELECT A.id, A.content, TO_CHAR(A.created_at, 'YYYYmmdd HH:MI') AS created_at, TO_CHAR(A.created_at, 'YYYYmmdd') AS created_at_text, A.appuser_id, B.fullname, B.avatar_url 
+        `SELECT A.id, A.content, A.created_at, A.appuser_id, B.fullname, B.avatar_url 
         FROM message A 
         INNER JOIN appuser B ON A.appuser_id = B.id 
         WHERE A.channel_id = '${channelId}' 
@@ -104,6 +104,30 @@ app.post("/channel/list", auth, async (req, res) => {
         const channels = await Channel.findAll({ where: { name: { [Op.iLike]: `%${keyword.trim()}%` } } });
         res.json({ success: true, channels });
     } catch(err) {
+        res.json({ success: false, error: err.message });
+    }
+    
+});
+
+app.post("/channel/message", auth, async (req, res) => {
+    try {
+        const { channelId, content } = req.body;
+
+        if (!content || content.trim().length === 0) {
+            res.status(200).send({ success: false, error: "Message content cannot be empty" });
+        }
+
+        const newMessage = await Message.create({
+            id: uuidv4(),
+            channel_id: channelId,
+            appuser_id: req.user.user_id,
+            content,
+            created_at: parseInt((new Date()).getTime() / 1000)
+        });
+
+        res.json({ success: true, newMessage });
+    } catch(err) {
+        console.info(err);
         res.json({ success: false, error: err.message });
     }
     
