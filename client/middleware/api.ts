@@ -82,6 +82,14 @@ export interface SendChannelMessageResponse {
   }
 }
 
+export interface CreateChannelResponse {
+  data: {
+    success: boolean
+    error?: string
+    newChannel?: ChannelInfo
+  }
+}
+
 export const login = (username: string, password: string): Promise<LoginResponse> => {
   let data = JSON.stringify({
     "username": username,
@@ -159,6 +167,21 @@ export const sendChannelMessage = (channelId: string, content: string): Promise<
     data : JSON.stringify({
       "channelId": channelId,
       "content": content
+    })
+  });
+}
+
+export const createChannel = (name: string, description: string): Promise<CreateChannelResponse> => {
+  return axios({
+    method: 'post',
+    maxBodyLength: Infinity,
+    url: "/channel/create",
+    headers: { 
+      'Content-Type': 'application/json'
+    },
+    data : JSON.stringify({
+      "name": name,
+      "description": description
     })
   });
 }

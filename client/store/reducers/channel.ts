@@ -22,7 +22,11 @@ export const Types = {
 
   ADD_MESSAGE: "channel/ADD_MESSAGE",
   SHOW_NEW_CHANNEL_MODAL: "channel/SHOW_NEW_CHANNEL_MODAL",
-  HIDE_NEW_CHANNEL_MODAL: "channel/HIDE_NEW_CHANNEL_MODAL"
+  HIDE_NEW_CHANNEL_MODAL: "channel/HIDE_NEW_CHANNEL_MODAL",
+  
+  CREATE_CHANNEL_REQUEST: "channel/CREATE_CHANNEL_REQUEST",
+  CREATE_CHANNEL_SUCCESS: "channel/CREATE_CHANNEL_SUCCESS",
+  CREATE_CHANNEL_FAILURE: "channel/CREATE_CHANNEL_FAILURE",
 };
 
 export const SIDEBAR_MODES = {
@@ -49,6 +53,8 @@ export interface ChannelAction {
   channels?: ChannelInfo[]
   content?: string
   newChannelModalVisible?: boolean
+  newChannelName?: string
+  newChannelDescription?: string
   onSuccess?: () => void
   onError?: (message: string) => void
   payload?: any
@@ -277,6 +283,33 @@ export const actions = {
       type: Types.HIDE_NEW_CHANNEL_MODAL
     }
   },
+  
+  createChannelRequest: (
+    newChannelName: string,
+    newChannelDescription: string,
+    onSuccess: () => void,
+    onError: (message: string) => void
+  ): ChannelAction => {
+    return {
+      type: Types.CREATE_CHANNEL_REQUEST,
+      newChannelName,
+      newChannelDescription,
+      onSuccess,
+      onError
+    }
+  },
+  
+  createChannelSuccess: (): ChannelAction => {
+    return {
+      type: Types.CREATE_CHANNEL_SUCCESS
+    }
+  },
+  
+  createChannelFailure: (): ChannelAction => {
+    return {
+      type: Types.CREATE_CHANNEL_FAILURE
+    }
+  }
 };
 
 export default channelReducer;

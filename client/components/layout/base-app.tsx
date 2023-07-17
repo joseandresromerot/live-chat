@@ -9,8 +9,8 @@ const BaseApp = ({ children }: BaseAppProps) => {
   return (
     <>
       {children}
-      <Alert />
       <NewChannel />
+      <Alert />
     </>
   );
 }
