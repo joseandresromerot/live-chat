@@ -1,0 +1,40 @@
+.container {
+  height: 150px;
+  background: #252329;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  padding: 0px 78px;
+}
+
+.fieldContainer {
+  border-radius: 8px;
+  background: #3C393F;
+  border: 0;
+  height: 52px;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  padding: 5px 5px 5px 20px;
+}
+
+.field {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  color: #fff;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: -0.49px;
+}
+
+.button {
+  color: #fff;
+  border-radius: 8px;
+  width: 40px;
+  background-color: #2F80ED;
+  border: 0;
+}

@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import ChannelMessagesTopBar from '@/components/channel-messages/top-bar';
 import { RootState } from '@/store/reducers';
 import ChannelMessagesList from '@/components/channel-messages/list';
+import ChannelMessagesNewMessageBar from '@/components/channel-messages/new-message-bar';
 
 interface ChannelPageState {
   error: string | null
@@ -46,6 +47,7 @@ const ChannelPage = () => {
         <>
           <ChannelMessagesTopBar title={channelInfo?.name || ""} />
           <ChannelMessagesList messages={messages} />
+          <ChannelMessagesNewMessageBar />
         </>
       )}
     </AuthenticatedPage>
