@@ -20,7 +20,9 @@ export const Types = {
   SEND_CHANNEL_MESSAGE_SUCCESS: "channel/SEND_CHANNEL_MESSAGE_SUCCESS",
   SEND_CHANNEL_MESSAGE_FAILURE: "channel/SEND_CHANNEL_MESSAGE_FAILURE",
 
-  ADD_MESSAGE: "channel/ADD_MESSAGE"
+  ADD_MESSAGE: "channel/ADD_MESSAGE",
+  SHOW_NEW_CHANNEL_MODAL: "channel/SHOW_NEW_CHANNEL_MODAL",
+  HIDE_NEW_CHANNEL_MODAL: "channel/HIDE_NEW_CHANNEL_MODAL"
 };
 
 export const SIDEBAR_MODES = {
@@ -33,6 +35,7 @@ export interface ChannelState {
   channelInfo: ChannelInfo | null | undefined
   messages: Message[]
   channels: ChannelInfo[]
+  newChannelModalVisible: boolean
 }
 
 export interface ChannelAction {
@@ -45,6 +48,7 @@ export interface ChannelAction {
   keyword?: string
   channels?: ChannelInfo[]
   content?: string
+  newChannelModalVisible?: boolean
   onSuccess?: () => void
   onError?: (message: string) => void
   payload?: any
@@ -54,7 +58,8 @@ const initialState: ChannelState = {
   sidebarMode: SIDEBAR_MODES.CHANNELS_LIST,
   channelInfo: null,
   messages: [],
-  channels: []
+  channels: [],
+  newChannelModalVisible: false
 };
 
 const channelReducer = (state = initialState, action: ChannelAction) => {
@@ -112,6 +117,18 @@ const channelReducer = (state = initialState, action: ChannelAction) => {
           ...state.messages,
           action.message
         ],
+      };
+
+    case Types.SHOW_NEW_CHANNEL_MODAL:
+      return {
+        ...state,
+        newChannelModalVisible: true,
+      };
+
+    case Types.HIDE_NEW_CHANNEL_MODAL:
+      return {
+        ...state,
+        newChannelModalVisible: false,
       };
 
     default:
@@ -247,7 +264,19 @@ export const actions = {
       type: Types.ADD_MESSAGE,
       message
     }
-  }
+  },
+  
+  showNewChannelModal: (): ChannelAction => {
+    return {
+      type: Types.SHOW_NEW_CHANNEL_MODAL
+    }
+  },
+  
+  hideNewChannelModal: (): ChannelAction => {
+    return {
+      type: Types.HIDE_NEW_CHANNEL_MODAL
+    }
+  },
 };
 
 export default channelReducer;

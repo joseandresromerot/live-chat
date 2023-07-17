@@ -1,3 +1,4 @@
+import NewChannel from "../channels-list/new-channel";
 import Alert from "../ui/message/alert";
 
 interface BaseAppProps {
@@ -9,6 +10,7 @@ const BaseApp = ({ children }: BaseAppProps) => {
     <>
       {children}
       <Alert />
+      <NewChannel />
     </>
   );
 }

@@ -56,6 +56,7 @@ const SidebarChannelListContent = () => {
         {channels.map(c => (
           <SidebarChannelsListItem
             key={c.id}
+            id={c.id}
             name={c.name}
           />
         ))}
