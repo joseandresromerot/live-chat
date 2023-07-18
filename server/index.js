@@ -130,6 +130,33 @@ app.post("/channel/message", auth, async (req, res) => {
         console.info(err);
         res.json({ success: false, error: err.message });
     }
+});
+
+app.post("/channel/create", auth, async (req, res) => {
+    try {
+        const { name, description } = req.body;
+
+        if (!name || name.trim().length === 0) {
+            res.status(200).send({ success: false, error: "Channel name is required" });
+            return;
+        }
+
+        if (!description || description.trim().length === 0) {
+            res.status(200).send({ success: false, error: "Channel description is required" });
+            return;
+        }
+
+        const newChannel = await Channel.create({
+            id: uuidv4(),
+            name,
+            description
+        });
+
+        res.json({ success: true, newChannel });
+    } catch(err) {
+        console.info(err);
+        res.json({ success: false, error: err.message });
+    }
     
 });
 
@@ -152,13 +179,14 @@ app.post("/login", async (req, res) => {
                 }
             );
 
-            res.cookie("access_token", token, { httpOnly: true }).status(200).json({
+            res.status(200).json({
                 success: true,
                 user: {
                     username: user.username,
                     fullname: user.fullname,
                     avatar_url: user.avatar_url
-                }
+                },
+                token
             });
             return;
         }

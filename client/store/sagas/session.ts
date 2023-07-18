@@ -1,7 +1,7 @@
 import * as Effects from "redux-saga/effects";
 import { SessionAction, Types, actions as sessionActions } from '../reducers/session';
 import { actions as messagesActions } from '../reducers/messages';
-import { LoginResponse, RegisterResponse, login as loginApi, register as registerApi, getUserInfo as getUserInfoApi, GetUserInfoResponse } from '@/middleware/api';
+import { LoginResponse, RegisterResponse, login as loginApi, register as registerApi, getUserInfo as getUserInfoApi, GetUserInfoResponse, storeAccessToken } from '@/middleware/api';
 
 const { takeLatest, fork, put } = Effects;
 const call: any = Effects.call;
@@ -14,6 +14,7 @@ function* login(action: SessionAction) {
         yield put(messagesActions.hideMessage());
 
         if (response.data.success === true) {
+            storeAccessToken(response.data.token);
             yield put(sessionActions.loginSuccess(response.data.user?.username || "", response.data.user?.fullname || "", response.data.user?.avatar_url || ""));
             action.onSuccess && action.onSuccess();
         } else {

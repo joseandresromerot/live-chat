@@ -131,15 +131,33 @@ export const register = (username: string, password: string, fullname: string, a
 }
 
 export const getUserInfo = (): Promise<GetUserInfoResponse> => {
-  return axios.get("/getuserinfo");
+  return axios({
+    method: 'get',
+    url: "/getuserinfo",
+    headers: {
+      'Autorization': getAccessToken()
+    }
+  });
 }
 
 export const getChannelInfo = (channelId: string): Promise<GetChannelInfoResponse> => {
-  return axios.get(`/channel/info/${channelId}`);
+  return axios({
+    method: 'get',
+    url: `/channel/info/${channelId}`,
+    headers: {
+      'Autorization': getAccessToken()
+    }
+  });
 }
 
 export const getChannelMessages = (channelId: string): Promise<GetChannelMessagesResponse> => {
-  return axios.get(`/channel/messages/${channelId}`);
+  return axios({
+    method: 'get',
+    url: `/channel/messages/${channelId}`,
+    headers: {
+      'Autorization': getAccessToken()
+    }
+  });
 }
 
 export const getChannels = (keyword: string): Promise<GetChannelsResponse> => {
@@ -147,8 +165,9 @@ export const getChannels = (keyword: string): Promise<GetChannelsResponse> => {
     method: 'post',
     maxBodyLength: Infinity,
     url: "/channel/list",
-    headers: { 
-      'Content-Type': 'application/json'
+    headers: {
+      'Content-Type': 'application/json',
+      'Autorization': getAccessToken()
     },
     data : JSON.stringify({
       "keyword": keyword
@@ -161,8 +180,9 @@ export const sendChannelMessage = (channelId: string, content: string): Promise<
     method: 'post',
     maxBodyLength: Infinity,
     url: "/channel/message",
-    headers: { 
-      'Content-Type': 'application/json'
+    headers: {
+      'Content-Type': 'application/json',
+      'Autorization': getAccessToken()
     },
     data : JSON.stringify({
       "channelId": channelId,
@@ -176,8 +196,9 @@ export const createChannel = (name: string, description: string): Promise<Create
     method: 'post',
     maxBodyLength: Infinity,
     url: "/channel/create",
-    headers: { 
-      'Content-Type': 'application/json'
+    headers: {
+      'Content-Type': 'application/json',
+      'Autorization': getAccessToken()
     },
     data : JSON.stringify({
       "name": name,
@@ -193,3 +214,15 @@ export const test = (): Promise<{ data: { message: string } }> => {
     url: '/test'
   });
 };
+
+export const getAccessToken = (): string => {
+  return localStorage.getItem(ACCESS_TOKEN_KEY) || "";
+}
+
+export const storeAccessToken = (token: string) => {
+  localStorage.setItem(ACCESS_TOKEN_KEY, `Bearer ${token}`);
+}
+
+export const removeAccessToken = () => {
+  localStorage.removeItem(ACCESS_TOKEN_KEY);
+}

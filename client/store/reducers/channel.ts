@@ -23,6 +23,8 @@ export const Types = {
   ADD_MESSAGE: "channel/ADD_MESSAGE",
   SHOW_NEW_CHANNEL_MODAL: "channel/SHOW_NEW_CHANNEL_MODAL",
   HIDE_NEW_CHANNEL_MODAL: "channel/HIDE_NEW_CHANNEL_MODAL",
+  SHOW_OPTIONS_PANEL: "channel/SHOW_OPTIONS_PANEL",
+  HIDE_OPTIONS_PANEL: "channel/HIDE_OPTIONS_PANEL",
   
   CREATE_CHANNEL_REQUEST: "channel/CREATE_CHANNEL_REQUEST",
   CREATE_CHANNEL_SUCCESS: "channel/CREATE_CHANNEL_SUCCESS",
@@ -40,6 +42,7 @@ export interface ChannelState {
   messages: Message[]
   channels: ChannelInfo[]
   newChannelModalVisible: boolean
+  optionsPanelVisible: boolean
 }
 
 export interface ChannelAction {
@@ -53,6 +56,7 @@ export interface ChannelAction {
   channels?: ChannelInfo[]
   content?: string
   newChannelModalVisible?: boolean
+  optionsPanelVisible?: boolean
   newChannelName?: string
   newChannelDescription?: string
   onSuccess?: () => void
@@ -65,7 +69,8 @@ const initialState: ChannelState = {
   channelInfo: null,
   messages: [],
   channels: [],
-  newChannelModalVisible: false
+  newChannelModalVisible: false,
+  optionsPanelVisible: false
 };
 
 const channelReducer = (state = initialState, action: ChannelAction) => {
@@ -135,6 +140,18 @@ const channelReducer = (state = initialState, action: ChannelAction) => {
       return {
         ...state,
         newChannelModalVisible: false,
+      };
+
+    case Types.SHOW_OPTIONS_PANEL:
+      return {
+        ...state,
+        optionsPanelVisible: true,
+      };
+
+    case Types.HIDE_OPTIONS_PANEL:
+      return {
+        ...state,
+        optionsPanelVisible: false,
       };
 
     default:
@@ -308,6 +325,18 @@ export const actions = {
   createChannelFailure: (): ChannelAction => {
     return {
       type: Types.CREATE_CHANNEL_FAILURE
+    }
+  },
+  
+  showOptionsPanel: (): ChannelAction => {
+    return {
+      type: Types.SHOW_OPTIONS_PANEL
+    }
+  },
+  
+  hideOptionsPanel: (): ChannelAction => {
+    return {
+      type: Types.HIDE_OPTIONS_PANEL
     }
   }
 };
