@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { actions } from '@/store/reducers/channel';
 import { format } from 'date-fns';
 import { RootState } from '@/store/reducers';
+import socket from "@/socket";
 
 interface ChannelMessagesNewMessageBarProps {
   channelId: string
@@ -25,16 +26,22 @@ const ChannelMessagesNewMessageBar = ({ channelId }: ChannelMessagesNewMessageBa
   };
 
   const handleSendMessage = () => {
+    const newMessage = {
+      id: `new-${(new Date()).getTime()}`,
+      content,
+      created_at: new Date(),
+      day: format(new Date(), "yyyyMMdd"),
+      channel_id: channelId,
+      appuser_id: "user",
+      avatar_url: avatar_url || "",
+      fullname: fullname || ""
+    };
+
     if (content.trim().length > 0) {
-      dispatch(actions.addMessage({
-        id: `new-${(new Date()).getTime()}`,
-        content,
-        created_at: new Date(),
-        day: format(new Date(), "yyyyMMdd"),
-        appuser_id: "user",
-        avatar_url: avatar_url || "",
-        fullname: fullname || ""
-      }));
+      dispatch(actions.addMessage(newMessage));
+
+      socket.emit("send_message", { channelId, newMessage });
+
       dispatch(actions.sendChannelMessageRequest(
         channelId,
         content,

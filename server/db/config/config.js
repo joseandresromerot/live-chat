@@ -7,7 +7,8 @@ module.exports = {
     database: process.env.PGSQL_DATABASE,
     host: process.env.PGSQL_HOST,
     port: process.env.PGSQL_PORT,
-    dialect: "postgres"
+    dialect: "postgres",
+    logging: false
   },
   test: {
     username: process.env.PGSQL_USER,
@@ -15,7 +16,8 @@ module.exports = {
     database: process.env.PGSQL_DATABASE,
     host: process.env.PGSQL_HOST,
     port: process.env.PGSQL_PORT,
-    dialect: "postgres"
+    dialect: "postgres",
+    logging: false
   },
   production: {
     username: process.env.PGSQL_USER,
@@ -23,6 +25,7 @@ module.exports = {
     database: process.env.PGSQL_DATABASE,
     host: process.env.PGSQL_HOST,
     port: process.env.PGSQL_PORT,
-    dialect: "postgres"
+    dialect: "postgres",
+    logging: false
   }
 }

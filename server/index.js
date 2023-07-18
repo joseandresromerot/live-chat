@@ -1,4 +1,5 @@
 const express = require("express");
+http = require('http');
 const cors = require('cors');
 const cookieParser = require('cookie-parser')
 const bcrypt = require('bcryptjs');
@@ -6,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require('uuid');
 const auth = require("./middleware/auth");
 const { Op } = require("sequelize");
+const { Server } = require('socket.io');
 const db = require('./db/models');
 const { sequelize, AppUser, Channel, ChannelAppUser, Message } = db;
 
@@ -26,6 +28,63 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser())
 
+const server = http.createServer(app);
+
+const CHAT_BOT = 'ChatBot';
+
+// Create an io server and allow for CORS from http://localhost:3000 with GET and POST methods
+const io = new Server(server, {
+    cors: {
+      origin: 'http://localhost:3000',
+      methods: ['GET', 'POST'],
+    },
+});
+
+// Listen for when the client connects via socket.io-client
+io.on('connection', (socket) => {
+    console.log(`User connected ${socket.id}`);
+  
+    // Add a user to a room
+    socket.on('join_room', (data) => {
+        const { username, channelId } = data; // Data sent from client when join_room event emitted
+        socket.join(channelId); // Join the user to a socket room
+
+        let __createdtime__ = Date.now(); // Current timestamp
+
+        // Send message to all users currently in the room, apart from the user that just joined
+        socket.to(channelId).emit('user_connected', {
+            message: `${username} has joined the chat room`,
+            username: CHAT_BOT,
+            __createdtime__,
+        });
+    });
+
+    socket.on('send_message', (data) => {
+        const { newMessage, channelId } = data;
+
+        let __createdtime__ = Date.now();
+
+        socket.to(channelId).emit('receive_message', {
+            channelId,
+            newMessage,
+            __createdtime__,
+        });
+    });
+
+    socket.on('leave_room', (data) => {
+        const { username, channelId } = data; // Data sent from client when join_room event emitted
+        socket.leave(channelId); // Join the user to a socket room
+
+        let __createdtime__ = Date.now(); // Current timestamp
+
+        socket.to(channelId).emit('user_disconnected', {
+            message: `${username} has leave the chat room`,
+            username: CHAT_BOT,
+            __createdtime__,
+        });
+    });
+});
+
 app.get("/api", async (req, res) => {
     const users = await AppUser.findAll();
     res.json({ message: "Hola desde el servidor!", user: users[0].toJSON() });
@@ -39,9 +98,10 @@ app.get("/test", auth, async (req, res) => {
 });
 
 app.get("/getuserinfo", auth, async (req, res) => {
-    const { id, fullname, avatar_url } = await AppUser.findByPk(req.user.user_id);
+    const { id, username, fullname, avatar_url } = await AppUser.findByPk(req.user.user_id);
     res.json({ success: true, user: {
         id,
+        username,
         fullname,
         avatar_url
     } });
@@ -59,8 +119,11 @@ app.get("/channel/info/:channel", auth, async (req, res) => {
     const userInChannel = await ChannelAppUser.findOne({ where: { channel_id: channelId, appuser_id: req.user.user_id } });
 
     if (!userInChannel) {
-        res.json({ success: false, error: "User doesn't belong to the channel" });
-        return;
+        await ChannelAppUser.create({
+            id: uuidv4(),
+            channel_id: channelId,
+            appuser_id: req.user.user_id
+        });
     }
 
     const members = await sequelize.query(`SELECT B.id, B.username, B.fullname, B.avatar_url FROM channel_appuser A INNER JOIN appuser B ON A.appuser_id = B.id WHERE A.channel_id = '${channelId}'`, {
@@ -232,6 +295,6 @@ app.post("/register", async (req, res) => {
     }
 });
 
-app.listen(PORT, HOST, () => {
+server.listen(PORT, HOST, () => {
     console.log(`Running on http://${HOST}:${PORT}`);
 });
