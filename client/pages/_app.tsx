@@ -9,7 +9,7 @@ import Modal from 'react-modal';
 import MainContainer from '@/components/layout/main-container';
 
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = 'http://localhost:3003';
+axios.defaults.baseURL = process.env.NEXT_PUBLIC_SERVER_URL;
 
 const notoSans = Noto_Sans({
   weight: ['300', '400', '500', '600', '700'],
