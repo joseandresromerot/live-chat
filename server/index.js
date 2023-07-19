@@ -2,14 +2,22 @@ const express = require("express");
 http = require('http');
 const cors = require('cors');
 const cookieParser = require('cookie-parser')
-const bcrypt = require('bcryptjs');
-const jwt = require("jsonwebtoken");
-const { v4: uuidv4 } = require('uuid');
 const auth = require("./middleware/auth");
-const { Op } = require("sequelize");
+const socketHandler = require('./socket/handler');
 const { Server } = require('socket.io');
-const db = require('./db/models');
-const { sequelize, AppUser, Channel, ChannelAppUser, Message } = db;
+
+const {
+    login,
+    register,
+    getUserInfo
+} = require('./service/auth');
+const {
+    getChannelInfoById,
+    getMessagesByChannelId,
+    getChannelsByKeyword,
+    createMessage,
+    createChannel
+} = require('./service/channel');
 
 require('dotenv').config();
 
@@ -19,7 +27,7 @@ const HOST = '0.0.0.0';
 const app = express();
 
 var corsOptions = {
-    origin: 'http://localhost:3000',
+    origin: process.env.FRONTEND_URL,
     credentials: true,
     //optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
@@ -30,269 +38,49 @@ app.use(cookieParser())
 
 const server = http.createServer(app);
 
-const CHAT_BOT = 'ChatBot';
-
 // Create an io server and allow for CORS from http://localhost:3000 with GET and POST methods
 const io = new Server(server, {
     cors: {
-      origin: 'http://localhost:3000',
+      origin: process.env.FRONTEND_URL,
       methods: ['GET', 'POST'],
     },
 });
 
 // Listen for when the client connects via socket.io-client
-io.on('connection', (socket) => {
-    console.log(`User connected ${socket.id}`);
-  
-    // Add a user to a room
-    socket.on('join_room', (data) => {
-        const { username, channelId } = data; // Data sent from client when join_room event emitted
-        socket.join(channelId); // Join the user to a socket room
-
-        let __createdtime__ = Date.now(); // Current timestamp
-
-        // Send message to all users currently in the room, apart from the user that just joined
-        socket.to(channelId).emit('user_connected', {
-            message: `${username} has joined the chat room`,
-            username: CHAT_BOT,
-            __createdtime__,
-        });
-    });
-
-    socket.on('send_message', (data) => {
-        const { newMessage, channelId } = data;
-
-        let __createdtime__ = Date.now();
-
-        socket.to(channelId).emit('receive_message', {
-            channelId,
-            newMessage,
-            __createdtime__,
-        });
-    });
-
-    socket.on('leave_room', (data) => {
-        const { username, channelId } = data; // Data sent from client when join_room event emitted
-        socket.leave(channelId); // Join the user to a socket room
-
-        let __createdtime__ = Date.now(); // Current timestamp
-
-        socket.to(channelId).emit('user_disconnected', {
-            message: `${username} has leave the chat room`,
-            username: CHAT_BOT,
-            __createdtime__,
-        });
-    });
-});
-
-app.get("/api", async (req, res) => {
-    const users = await AppUser.findAll();
-    res.json({ message: "Hola desde el servidor!", user: users[0].toJSON() });
-});
-
-app.get("/test", auth, async (req, res) => {
-    // Cookies that have not been signed
-    console.log('user: ', req.user);
-    
-    res.json({ message: "ok"});
-});
+io.on('connection', socketHandler);
 
 app.get("/getuserinfo", auth, async (req, res) => {
-    const { id, username, fullname, avatar_url } = await AppUser.findByPk(req.user.user_id);
-    res.json({ success: true, user: {
-        id,
-        username,
-        fullname,
-        avatar_url
-    } });
+    return res.json(await getUserInfo(req.user.user_id));
 });
 
 app.get("/channel/info/:channel", auth, async (req, res) => {
-    const channelId = req.params.channel;
-    const channel = await Channel.findByPk(channelId);
-
-    if (!channel) {
-        res.json({ success: false, error: "Channel not found" });
-        return;
-    }
-
-    const userInChannel = await ChannelAppUser.findOne({ where: { channel_id: channelId, appuser_id: req.user.user_id } });
-
-    if (!userInChannel) {
-        await ChannelAppUser.create({
-            id: uuidv4(),
-            channel_id: channelId,
-            appuser_id: req.user.user_id
-        });
-    }
-
-    const members = await sequelize.query(`SELECT B.id, B.username, B.fullname, B.avatar_url FROM channel_appuser A INNER JOIN appuser B ON A.appuser_id = B.id WHERE A.channel_id = '${channelId}'`, {
-        model: AppUser,
-        mapToModel: true
-    });
-
-    res.json({ success: true, channel: { ...channel.toJSON(), members } });
+    return res.json((await getChannelInfoById(req.params.channel, req.user.user_id)));
 });
 
 app.get("/channel/messages/:channel", auth, async (req, res) => {
-    const channelId = req.params.channel;
-    const channel = await Channel.findByPk(channelId);
-
-    if (!channel) {
-        res.json({ success: false, error: "Channel not found" });
-        return;
-    }
-
-    const userInChannel = await ChannelAppUser.findOne({ where: { channel_id: channelId, appuser_id: req.user.user_id } });
-
-    if (!userInChannel) {
-        res.json({ success: false, error: "User doesn't belong to the channel" });
-        return;
-    }
-
-    const messages = await sequelize.query(
-        `SELECT A.id, A.content, A.created_at, A.appuser_id, B.fullname, B.avatar_url 
-        FROM message A 
-        INNER JOIN appuser B ON A.appuser_id = B.id 
-        WHERE A.channel_id = '${channelId}' 
-        ORDER BY A.created_at DESC`
-    );
-
-    res.json({ success: true, messages: messages[0] });
+    return res.json((await getMessagesByChannelId(req.params.channel, req.user.user_id)));
 });
 
 app.post("/channel/list", auth, async (req, res) => {
-    try {
-        const { keyword } = req.body;
-        const channels = await Channel.findAll({ where: { name: { [Op.iLike]: `%${keyword.trim()}%` } } });
-        res.json({ success: true, channels });
-    } catch(err) {
-        res.json({ success: false, error: err.message });
-    }
-    
+    return res.json((await getChannelsByKeyword(req.body.keyword)));
 });
 
 app.post("/channel/message", auth, async (req, res) => {
-    try {
-        const { channelId, content } = req.body;
-
-        if (!content || content.trim().length === 0) {
-            res.status(200).send({ success: false, error: "Message content cannot be empty" });
-        }
-
-        const newMessage = await Message.create({
-            id: uuidv4(),
-            channel_id: channelId,
-            appuser_id: req.user.user_id,
-            content,
-            created_at: parseInt((new Date()).getTime() / 1000)
-        });
-
-        res.json({ success: true, newMessage });
-    } catch(err) {
-        console.info(err);
-        res.json({ success: false, error: err.message });
-    }
+    return res.json((await createMessage(req.body.channelId, req.body.content, req.user.user_id)));
 });
 
 app.post("/channel/create", auth, async (req, res) => {
-    try {
-        const { name, description } = req.body;
-
-        if (!name || name.trim().length === 0) {
-            res.status(200).send({ success: false, error: "Channel name is required" });
-            return;
-        }
-
-        if (!description || description.trim().length === 0) {
-            res.status(200).send({ success: false, error: "Channel description is required" });
-            return;
-        }
-
-        const newChannel = await Channel.create({
-            id: uuidv4(),
-            name,
-            description
-        });
-
-        res.json({ success: true, newChannel });
-    } catch(err) {
-        console.info(err);
-        res.json({ success: false, error: err.message });
-    }
-    
+    return res.json((await createChannel(req.body.name, req.body.description)));
 });
 
 app.post("/login", async (req, res) => {
-    try {
-        const { username, password } = req.body;
-
-        if (!(username && password)) {
-            res.status(200).send({ success: false, error: "Enter username and password" });
-        }
-
-        const user = await AppUser.findOne({ where: { username } });
-
-        if (user && (await bcrypt.compare(password, user.password))) {
-            const token = jwt.sign(
-                { user_id: user.id, username },
-                process.env.JWT_TOKEN_KEY,
-                {
-                    expiresIn: "2h",
-                }
-            );
-
-            res.status(200).json({
-                success: true,
-                user: {
-                    username: user.username,
-                    fullname: user.fullname,
-                    avatar_url: user.avatar_url
-                },
-                token
-            });
-            return;
-        }
-        res.status(200).send({ success: false, error: "Invalid Credentials" });
-    } catch (err) {
-        return res.status(200).send({ success: false, error: err.message });
-    }
+    const { username, password } = req.body;
+    return res.status(200).send(await login(username, password));
 });
 
 app.post("/register", async (req, res) => {
-    try {
-        const { fullname, avatar_url, username, password } = req.body;
-
-        if (!(username && password && fullname)) {
-            res.status(200).send({ success: false, error: "Enter username, password and full name" });
-        }
-
-        const oldUser = await AppUser.findOne({ where: { username } });
-
-        if (oldUser) {
-            return res.status(200).send({ success: false, error: "User Already Exist. Please Login" });
-        }
-
-        const encryptedPassword = await bcrypt.hash(password, 10);
-
-        const user = await AppUser.create({
-            id: uuidv4(),
-            fullname,
-            avatar_url,
-            username: username.toLowerCase(), // sanitize: convert email to lowercase
-            password: encryptedPassword,
-        });
-
-        await ChannelAppUser.create({
-            id: uuidv4(),
-            channel_id: 'f9d8cd62-5161-40b9-8d60-a6f804a5f46a',
-            appuser_id: user.id
-        });
-
-        res.status(201).json({ success: true });
-    } catch (err) {
-        return res.status(200).send({ success: false, error: err.message });
-    }
+    const { fullname, avatar_url, username, password } = req.body;
+    return res.status(200).send(await register(fullname, avatar_url, username, password));
 });
 
 server.listen(PORT, HOST, () => {
