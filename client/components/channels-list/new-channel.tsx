@@ -6,6 +6,7 @@ import { RootState } from "@/store/reducers";
 import { actions } from "@/store/reducers/channel";
 import RoundedButton from "../ui/button/rounded-button";
 import { useState } from "react";
+import { toast } from 'react-toastify';
 
 const notoSans = Noto_Sans({
   weight: ['300', '400', '500', '600', '700'],
@@ -42,7 +43,9 @@ const NewChannel = () => {
       () => {
         dispatch(actions.hideNewChannelModal());
       },
-      () => {}
+      (error) => {
+        toast.error(error);
+      }
     ));
   }
 

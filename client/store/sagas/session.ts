@@ -11,7 +11,7 @@ function* login(action: SessionAction) {
         yield put(messagesActions.showLoading());
         const response: LoginResponse = yield call(loginApi, action.username, action.password);
 
-        yield put(messagesActions.hideMessage());
+        yield put(messagesActions.hideLoading());
 
         if (response.data.success === true) {
             storeAccessToken(response.data.token);
@@ -23,7 +23,7 @@ function* login(action: SessionAction) {
         }
     } catch(err: any) {
         console.info(err);
-        yield put(messagesActions.hideMessage());
+        yield put(messagesActions.hideLoading());
         yield put(sessionActions.loginFailure());
         action.onError && action.onError(err.message || "Unexpected error");
     }
@@ -38,7 +38,7 @@ function* register(action: SessionAction) {
         yield put(messagesActions.showLoading());
         const response: RegisterResponse = yield call(registerApi, action.username, action.password, action.fullname, action.avatar_url);
 
-        yield put(messagesActions.hideMessage());
+        yield put(messagesActions.hideLoading());
 
         if (response.data.success === true) {
             yield put(sessionActions.registerSuccess());
@@ -49,7 +49,7 @@ function* register(action: SessionAction) {
         }
     } catch(err: any) {
         console.info(err);
-        yield put(messagesActions.hideMessage());
+        yield put(messagesActions.hideLoading());
         yield put(sessionActions.registerFailure());
         action.onError && action.onError(err.message || "Unexpected error");
     }
@@ -64,7 +64,7 @@ function* getUserInfo(action: SessionAction) {
         yield put(messagesActions.showLoading());
         const response: GetUserInfoResponse = yield call(getUserInfoApi);
 
-        yield put(messagesActions.hideMessage());
+        yield put(messagesActions.hideLoading());
 
         if (response.data.success === true) {
             yield put(sessionActions.getUserInfoSuccess(
@@ -79,7 +79,7 @@ function* getUserInfo(action: SessionAction) {
         }
     } catch(err: any) {
         //console.info(err);
-        yield put(messagesActions.hideMessage());
+        yield put(messagesActions.hideLoading());
         yield put(sessionActions.getUserInfoFailure());
         action.onError && action.onError(err.message || "Unexpected error");
     }

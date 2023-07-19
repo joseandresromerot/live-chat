@@ -6,14 +6,16 @@ interface IconFieldProps extends React.DetailedHTMLProps<React.InputHTMLAttribut
   icon:  IconProp
   iconSize: number
   containerClassName?: string
+  iconClassName?: string
 }
 
-const IconField = ({ icon, iconSize, containerClassName, className, ...rest }: IconFieldProps) => {
+const IconField = ({ icon, iconSize, containerClassName, className, iconClassName, ...rest }: IconFieldProps) => {
   return (
     <div className={`${classes.container} ${containerClassName}`}>
       <FontAwesomeIcon
         icon={icon}
         style={{ fontSize: iconSize, alignSelf: "center" }}
+        className={iconClassName}
       />
 
       <input {...rest} className={`${classes.field} ${className}`} />
@@ -23,7 +25,8 @@ const IconField = ({ icon, iconSize, containerClassName, className, ...rest }: I
 
 IconField.defaultProps = {
   containerClassName: "",
-  className: ""
+  className: "",
+  iconClassName: ""
 };
 
 export default IconField;

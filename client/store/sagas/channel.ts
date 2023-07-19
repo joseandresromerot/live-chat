@@ -20,10 +20,10 @@ const call: any = Effects.call;
 
 function* getChannelInfo(action: ChannelAction) {
     try {
-        //yield put(messagesActions.showLoading());
+        yield put(messagesActions.showLoading());
         const response: GetChannelInfoResponse = yield call(getChannelInfoApi, action.channelId);
 
-        //yield put(messagesActions.hideMessage());
+        yield put(messagesActions.hideLoading());
 
         if (response.data.success === true) {
             yield put(channelActions.getChannelInfoSuccess(response.data.channel));
@@ -35,7 +35,7 @@ function* getChannelInfo(action: ChannelAction) {
         }
     } catch(err: any) {
         //console.info(err);
-        //yield put(messagesActions.hideMessage());
+        yield put(messagesActions.hideLoading());
         yield put(channelActions.getChannelInfoFailure());
         action.onError && action.onError(err.message || "Unexpected error");
     }
@@ -50,7 +50,7 @@ function* getChannelMessages(action: ChannelAction) {
         //yield put(messagesActions.showLoading());
         const response: GetChannelMessagesResponse = yield call(getChannelMessagesApi, action.channelId);
 
-        //yield put(messagesActions.hideMessage());
+        //yield put(messagesActions.hideLoading());
 
         if (response.data.success === true) {
             yield put(channelActions.getChannelMessagesSuccess(response.data.messages?.map(message => {
@@ -68,7 +68,7 @@ function* getChannelMessages(action: ChannelAction) {
         }
     } catch(err: any) {
         //console.info(err);
-        //yield put(messagesActions.hideMessage());
+        //yield put(messagesActions.hideLoading());
         yield put(channelActions.getChannelMessagesFailure());
         action.onError && action.onError(err.message || "Unexpected error");
     }
@@ -80,10 +80,10 @@ function* watchGetChannelMessagesRequest() {
 
 function* getChannels(action: ChannelAction) {
     try {
-        yield put(messagesActions.showLoading());
+        //yield put(messagesActions.showLoading());
         const response: GetChannelsResponse = yield call(getChannelsApi, action.keyword);
 
-        yield put(messagesActions.hideMessage());
+        //yield put(messagesActions.hideLoading());
 
         if (response.data.success === true) {
             yield put(channelActions.getChannelsSuccess(response.data.channels));
@@ -94,7 +94,7 @@ function* getChannels(action: ChannelAction) {
         }
     } catch(err: any) {
         //console.info(err);
-        yield put(messagesActions.hideMessage());
+        //yield put(messagesActions.hideLoading());
         yield put(channelActions.getChannelsFailure());
         action.onError && action.onError(err.message || "Unexpected error");
     }
@@ -109,7 +109,7 @@ function* sendChannelMessage(action: ChannelAction) {
         //yield put(messagesActions.showLoading());
         const response: SendChannelMessageResponse = yield call(sendChannelMessageApi, action.channelId, action.content);
 
-        //yield put(messagesActions.hideMessage());
+        //yield put(messagesActions.hideLoading());
 
         if (response.data.success === true) {
             yield put(channelActions.sendChannelMessageSuccess());
@@ -121,7 +121,7 @@ function* sendChannelMessage(action: ChannelAction) {
         }
     } catch(err: any) {
         //console.info(err);
-        //yield put(messagesActions.hideMessage());
+        //yield put(messagesActions.hideLoading());
         yield put(channelActions.sendChannelMessageFailure());
         action.onError && action.onError(err.message || "Unexpected error");
     }
@@ -136,7 +136,7 @@ function* createChannel(action: ChannelAction) {
         yield put(messagesActions.showLoading());
         const response: CreateChannelResponse = yield call(createChannelApi, action.newChannelName, action.newChannelDescription);
 
-        yield put(messagesActions.hideMessage());
+        yield put(messagesActions.hideLoading());
 
         if (response.data.success === true) {
             yield put(channelActions.createChannelSuccess());
@@ -148,7 +148,7 @@ function* createChannel(action: ChannelAction) {
         }
     } catch(err: any) {
         //console.info(err);
-        yield put(messagesActions.hideMessage());
+        yield put(messagesActions.hideLoading());
         yield put(channelActions.createChannelFailure());
         action.onError && action.onError(err.message || "Unexpected error");
     }

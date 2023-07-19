@@ -6,13 +6,13 @@ import { removeAccessToken } from '@/middleware/api';
 const OptionsPanel = () => {
   return (
     <div className={classes.container}>
-      <OptionsItem
+      {/*<OptionsItem
         icon={faCircleUser}
         label="My Profile"
         className={classes.white}
       />
 
-      <hr className={classes.divider} />
+      <hr className={classes.divider} />*/}
 
       <OptionsItem
         icon={faRightFromBracket}

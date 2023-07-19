@@ -7,6 +7,7 @@ import { actions } from '@/store/reducers/channel';
 import { format } from 'date-fns';
 import { RootState } from '@/store/reducers';
 import socket from "@/socket";
+import { toast } from 'react-toastify';
 
 interface ChannelMessagesNewMessageBarProps {
   channelId: string
@@ -49,7 +50,7 @@ const ChannelMessagesNewMessageBar = ({ channelId }: ChannelMessagesNewMessageBa
           setContent("");
         },
         (error) => {
-          console.info('fff', error);
+          toast.error(error);
         }
       ));
     }

@@ -5,28 +5,39 @@ import { RootState } from '@/store/reducers';
 import { useRouter } from 'next/router';
 
 interface AuthenticatedPageProps {
-  children: JSX.Element | JSX.Element[]
+  children: JSX.Element | JSX.Element[] | undefined | null
+  notAuthenticatedMode?: boolean
 }
 
-const AuthenticatedPage = ({ children }: AuthenticatedPageProps) => {
+const AuthenticatedPage = ({ children, notAuthenticatedMode }: AuthenticatedPageProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const { authenticated } = useSelector((state: RootState) => state.session);
 
   useEffect(() => {
     dispatch(sessionActions.getUserInfoRequest(
-      () => {},
+      () => {
+        if (notAuthenticatedMode) {
+          router.replace("/");
+        }
+      },
       (error) => {
-        router.replace("/auth");
+        if (!notAuthenticatedMode) {
+          router.replace("/auth");
+        }
       }
     ));
   }, []);
 
-  if (!authenticated) {
+  if ((!notAuthenticatedMode && !authenticated) || (notAuthenticatedMode && authenticated)) {
     return null;
   }
 
   return children;
 }
+
+AuthenticatedPage.defaultProps = {
+  notAuthenticatedMode: false
+};
 
 export default AuthenticatedPage;

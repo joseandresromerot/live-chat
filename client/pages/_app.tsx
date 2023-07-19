@@ -1,6 +1,7 @@
 import BaseApp from '@/components/layout/base-app';
 import { wrapper } from '@/store'
-import '@/styles/globals.css'
+import '@/styles/globals.css';
+import 'react-toastify/dist/ReactToastify.css';
 import type { AppProps } from 'next/app'
 import Head from 'next/head';
 import { Noto_Sans } from 'next/font/google';

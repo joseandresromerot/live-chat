@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { actions } from '@/store/reducers/channel';
 import { RootState } from '@/store/reducers';
 import SidebarChannelsListItem from './item';
+import { toast } from 'react-toastify';
 
 interface SidebarChannelListContentState {
   keyword: string
@@ -21,7 +22,9 @@ const SidebarChannelListContent = () => {
     dispatch(actions.getChannelsRequest(
       "",
       () => {},
-      () => {}
+      (error) => {
+        toast.error(error);
+      }
     ));
   }, []);
 
@@ -29,7 +32,9 @@ const SidebarChannelListContent = () => {
     dispatch(actions.getChannelsRequest(
       newKeyword,
       () => {},
-      () => {}
+      (error) => {
+        toast.error(error);
+      }
     ));
   };
 
@@ -48,6 +53,7 @@ const SidebarChannelListContent = () => {
         iconSize={24}
         placeholder="Search"
         containerClassName={classes.search}
+        iconClassName={classes.searchIcon}
         value={keyword}
         onChange={handleKeywordChange}
       />

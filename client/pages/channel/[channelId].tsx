@@ -1,6 +1,6 @@
 import classes from './channel-page.module.css';
 import AuthenticatedPage from "@/components/auth/auth-page"
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { actions } from "@/store/reducers/channel";
 import { useRouter } from "next/router";
@@ -9,13 +9,9 @@ import { RootState } from '@/store/reducers';
 import ChannelMessagesList from '@/components/channel-messages/list';
 import ChannelMessagesNewMessageBar from '@/components/channel-messages/new-message-bar';
 import socket from "../../socket";
-
-interface ChannelPageState {
-  error: string | null
-}
+import { toast } from 'react-toastify';
 
 const ChannelPage = () => {
-  const [error, setError] = useState<ChannelPageState["error"]>(null);
   const dispatch = useDispatch();
   const router = useRouter();
   const { channelInfo, messages } = useSelector((state: RootState) => state.channel);
@@ -28,17 +24,17 @@ const ChannelPage = () => {
         () => {
           console.info('JOIN CHANNEL', router.query.channelId);
           socket.emit('join_room', { username, channelId: router.query.channelId });
+
+          dispatch(actions.getChannelMessagesRequest(
+            router.query.channelId as string,
+            () => {},
+            (message) => {
+              toast.error(message);
+            }
+          ));
         },
         (message) => {
-          setError(message);
-        }
-      ));
-
-      dispatch(actions.getChannelMessagesRequest(
-        router.query.channelId as string,
-        () => {},
-        (message) => {
-          setError(message);
+          toast.error(message);
         }
       ));
     }
@@ -57,7 +53,7 @@ const ChannelPage = () => {
           router.query.channelId as string,
           () => {},
           (message) => {
-            setError(message);
+            toast.error(message);
           }
         ));
       }
@@ -76,15 +72,17 @@ const ChannelPage = () => {
 
   return (
     <AuthenticatedPage>
-      {error ? (
-        <h1>{error}</h1>
-      ) : (
-        <>
+      <>
+        {channelInfo &&
           <ChannelMessagesTopBar title={channelInfo?.name || ""} />
-          <ChannelMessagesList messages={messages} />
+        }
+
+        <ChannelMessagesList messages={messages} />
+
+        {channelInfo &&
           <ChannelMessagesNewMessageBar channelId={channelInfo?.id || ""} />
-        </>
-      )}
+        }
+      </>
     </AuthenticatedPage>
   )
 };

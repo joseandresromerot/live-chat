@@ -5,9 +5,11 @@ export const Types = {
   HIDE_MESSAGE: "messages/HIDE_MESSAGE",
 
   SHOW_LOADING: "messages/SHOW_LOADING",
+  HIDE_LOADING: "messages/HIDE_LOADING",
 };
 
 export interface MessagesState {
+  loading: boolean
   visible: boolean
   message: string
   primaryButtonText: string
@@ -19,10 +21,12 @@ export interface MessagesState {
 export interface MessagesAction {
   type: string
   visible?: boolean,
+  loading?:boolean
   payload?: any
 }
 
 const initialState: MessagesState = {
+  loading: false,
   visible: false,
   message: "",
   primaryButtonText: "",
@@ -60,12 +64,12 @@ const messagesReducer = (state = initialState, action: MessagesAction) => {
     case Types.SHOW_LOADING:
       return {
         ...state,
-        visible: true,
-        message: "Loading...",
-        primaryButtonText: "",
-        primaryButtonHandler: () => {},
-        secondaryButtonText: "",
-        secondaryButtonHandler: () => {}
+        loading: true
+      };
+    case Types.HIDE_LOADING:
+      return {
+        ...state,
+        loading: false
       };
 
     default:
@@ -102,6 +106,12 @@ export const actions = {
   showLoading: () => {
     return {
       type: Types.SHOW_LOADING
+    }
+  },
+
+  hideLoading: () => {
+    return {
+      type: Types.HIDE_LOADING
     }
   }
 };
