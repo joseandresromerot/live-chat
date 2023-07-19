@@ -49,6 +49,10 @@ const io = new Server(server, {
 // Listen for when the client connects via socket.io-client
 io.on('connection', socketHandler);
 
+app.get("/test", async (req, res) => {
+    res.json({ message: "Hola desde el servidor!" });
+});
+
 app.get("/getuserinfo", auth, async (req, res) => {
     return res.json(await getUserInfo(req.user.user_id));
 });
