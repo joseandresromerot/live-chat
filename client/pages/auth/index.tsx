@@ -71,7 +71,7 @@ const AuthPage = () => {
         () => {
           setFormData(FORM_INITIAL_STATE);
           setIsLoginPage(true);
-          toast.error("User registered successfully");
+          toast.success("User registered successfully");
         },
         (error) => {
           toast.error(error);
