@@ -12,6 +12,9 @@ export const Types = {
   GET_USER_INFO_REQUEST: "session/GET_USER_INFO_REQUEST",
   GET_USER_INFO_SUCCESS: "session/GET_USER_INFO_SUCCESS",
   GET_USER_INFO_FAILURE: "session/GET_USER_INFO_FAILURE",
+  
+  SET_AUDIO_READY: "session/SET_AUDIO_READY",
+  SET_AUDIO_REF: "session/SET_AUDIO_REF",
 };
 
 export interface SessionState {
@@ -19,6 +22,8 @@ export interface SessionState {
   username: string | null
   fullname: string | null
   avatar_url: string | null
+  audioReady: boolean
+  audioRef: React.MutableRefObject<HTMLAudioElement | null> | null
 }
 
 export interface SessionAction {
@@ -27,6 +32,8 @@ export interface SessionAction {
   password?: string
   fullname?: string
   avatar_url?: string | null
+  audioReady?: boolean
+  audioRef?: React.MutableRefObject<HTMLAudioElement | null> | null
   onSuccess?: () => void
   onError?: (message: string) => void
   payload?: any
@@ -36,7 +43,9 @@ const initialState: SessionState = {
   authenticated: false,
   username: null,
   fullname: null,
-  avatar_url: null
+  avatar_url: null,
+  audioReady: false,
+  audioRef: null
 };
 
 const sessionReducer = (state = initialState, action: SessionAction) => {
@@ -76,6 +85,18 @@ const sessionReducer = (state = initialState, action: SessionAction) => {
         username: null,
         fullname: null,
         avatar_url: null
+      };
+    case Types.SET_AUDIO_READY:
+      console.info('action', action, action.audioReady);
+      return {
+        ...state,
+        audioReady: action.audioReady
+      };
+    case Types.SET_AUDIO_REF:
+      console.info('action.audioRef', action.audioRef);
+      return {
+        ...state,
+        audioRef: action.audioRef
       };
     default:
       return state;
@@ -142,6 +163,16 @@ export const actions = {
   
   getUserInfoFailure: (): SessionAction => ({
     type: Types.GET_USER_INFO_FAILURE
+  }),
+  
+  setAudioReady: (audioReady: boolean): SessionAction => ({
+    type: Types.SET_AUDIO_READY,
+    audioReady
+  }),
+  
+  setAudioRef: (audioRef: React.MutableRefObject<HTMLAudioElement | null>): SessionAction => ({
+    type: Types.SET_AUDIO_REF,
+    audioRef
   })
 };
 

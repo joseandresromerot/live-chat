@@ -1,6 +1,6 @@
 import classes from './channel-page.module.css';
 import AuthenticatedPage from "@/components/auth/auth-page"
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { actions } from "@/store/reducers/channel";
 import { useRouter } from "next/router";
@@ -10,12 +10,15 @@ import ChannelMessagesList from '@/components/channel-messages/list';
 import ChannelMessagesNewMessageBar from '@/components/channel-messages/new-message-bar';
 import socket from "../../socket";
 import { toast } from 'react-toastify';
+//import useSound from 'use-sound';
 
 const ChannelPage = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const { channelInfo, messages } = useSelector((state: RootState) => state.channel);
   const { username } = useSelector((state: RootState) => state.session);
+  //const [play] = useSound('/tone.mp3', { volume: 0.5 });
+  const { audioRef } = useSelector((state: RootState) => state.session);
 
   useEffect(() => {
     if (router.query.channelId) {
@@ -48,6 +51,11 @@ const ChannelPage = () => {
           ...data.newMessage,
           created_at: (data.__createdtime__ as number) / 1000
         }));*/
+
+        //play();
+        console.info('..audioRef', audioRef);
+        audioRef?.current?.play();
+        
 
         dispatch(actions.getChannelMessagesRequest(
           router.query.channelId as string,
